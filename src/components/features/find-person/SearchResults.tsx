@@ -34,7 +34,7 @@ export function SearchResults({ results, showResults, onNewSearch }: SearchResul
   if (!showResults) {
     return (
       <div className="text-center py-12 text-gray-500">
-        <p>{t.noSearchMessage}</p>
+        <p>{t.noSearchMessage || (currentLanguage === 'ar' ? 'استخدم النموذج أعلاه للبحث عن شخص مفقود' : 'Use the form above to search for a lost person')}</p>
       </div>
     );
   }
@@ -75,7 +75,7 @@ export function SearchResults({ results, showResults, onNewSearch }: SearchResul
               <p><strong>{t.age}:</strong> {result.age} {currentLanguage === 'ar' ? 'سنة' : 'years'}</p>
               <p><strong>{t.clothing}:</strong> {result.clothingColor}</p>
               <p><strong>{t.lastSeen}:</strong> {result.lastSeenLocation}</p>
-              <p><strong>{t.phone || "الهاتف"}:</strong> {result.phone}</p>
+              <p><strong>{"الهاتف"}:</strong> {result.phone}</p>
               {result.distinctiveFeature && (
                 <p><strong>{t.distinctiveMark}:</strong> {result.distinctiveFeature}</p>
               )}
@@ -122,7 +122,7 @@ export function SearchResults({ results, showResults, onNewSearch }: SearchResul
           </div>
           <div className="text-sm text-gray-600 space-y-1">
             <p><strong>{t.lastSeen}:</strong> {selectedPerson?.lastSeenLocation}</p>
-            <p><strong>{t.phone || "الهاتف"}:</strong> {selectedPerson?.phone}</p>
+            <p><strong>{"الهاتف"}:</strong> {selectedPerson?.phone}</p>
             {selectedPerson?.distinctiveFeature && (
               <p><strong>{t.distinctiveMark}:</strong> {selectedPerson.distinctiveFeature}</p>
             )}

@@ -39,7 +39,6 @@ export interface FindPersonTranslations {
   showOnMap: string;
 
   // Result details
-  age: string;
   clothing: string;
   lastSeen: string;
   distinctiveMark: string;
@@ -87,7 +86,6 @@ export const findPersonTranslations: Record<'ar' | 'en' | 'fa', FindPersonTransl
     showOnMap: 'عرض على الخريطة',
 
     // Result details
-    age: 'العمر',
     clothing: 'لون الملابس',
     lastSeen: 'آخر مكان',
     distinctiveMark: 'علامة مميزة'
@@ -134,7 +132,6 @@ export const findPersonTranslations: Record<'ar' | 'en' | 'fa', FindPersonTransl
     showOnMap: 'Show on Map',
 
     // Result details
-    age: 'Age',
     clothing: 'Clothing Color',
     lastSeen: 'Last Seen',
     distinctiveMark: 'Distinctive Mark'
@@ -181,7 +178,6 @@ export const findPersonTranslations: Record<'ar' | 'en' | 'fa', FindPersonTransl
     showOnMap: 'نمایش در نقشه',
 
     // Result details
-    age: 'سن',
     clothing: 'رنگ لباس',
     lastSeen: 'آخرین بار دیده شده',
     distinctiveMark: 'علامت متمایز'

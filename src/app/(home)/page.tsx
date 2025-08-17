@@ -32,17 +32,17 @@ export default function HomePage() {
   // Show loading state during hydration and language initialization to prevent mismatch
   if (!isHydrated || !isInitialized) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-4">
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 p-4 md:p-6">
         <div className="max-w-4xl mx-auto">
           <HomeHeader 
             isAuthenticated={false}
             onLogout={handleLogout}
           />
 
-          <main className="space-y-6">
-            <Card className="p-8">
-              <div className="text-center space-y-6">
-                <p className="text-lg text-gray-700 mb-6">
+          <main className="space-y-8">
+            <Card className="text-center">
+              <div className="space-y-8">
+                <p className="text-xl md:text-2xl text-gray-700 leading-relaxed">
                   {t.welcomeMessage}
                 </p>
                 <ActionButtons />
@@ -57,17 +57,17 @@ export default function HomePage() {
   // Show public interface if not authenticated
   if (!isAuthenticated || !user) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-4">
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 p-4 md:p-6">
         <div className="max-w-4xl mx-auto">
           <HomeHeader 
             isAuthenticated={false}
             onLogout={handleLogout}
           />
 
-          <main className="space-y-6">
-            <Card className="p-8">
-              <div className="text-center space-y-6">
-                <p className="text-lg text-gray-700 mb-6">
+          <main className="space-y-8">
+            <Card className="text-center">
+              <div className="space-y-8">
+                <p className="text-xl md:text-2xl text-gray-700 leading-relaxed">
                   {t.welcomeMessage}
                 </p>
                 <ActionButtons />
@@ -82,7 +82,7 @@ export default function HomePage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-4">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 p-4 md:p-6">
       <div className="max-w-4xl mx-auto">
         <HomeHeader 
           isAuthenticated={true}
@@ -90,10 +90,10 @@ export default function HomePage() {
           onLogout={handleLogout}
         />
 
-        <main className="space-y-6">
-          <Card className="p-8">
-            <div className="text-center space-y-6">
-              <p className="text-lg text-gray-700 mb-6">
+        <main className="space-y-8">
+          <Card className="text-center">
+            <div className="space-y-8">
+              <p className="text-xl md:text-2xl text-gray-700 leading-relaxed">
                 {t.welcomeMessage}
               </p>
               <ActionButtons />

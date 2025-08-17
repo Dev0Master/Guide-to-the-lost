@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useLiveProfile } from "@/hooks/useLiveProfile";
 import { useLocationTracking } from "@/hooks/useLocationTracking";
 import { useLanguageStore } from "@/store/language/languageStore";
 import { RealTimeNavigationMap } from "@/components/features/navigation/RealTimeNavigationMap";
+import { LostPersonNavigationInterface } from "@/components/features/navigation/LostPersonNavigationInterface";
 import { Navigation } from "lucide-react";
 
 interface LiveTrackingProps {
@@ -48,12 +49,20 @@ export function LiveTracking({ profileId, currentSessionId, onClose }: LiveTrack
     setShowNavigation(!showNavigation);
   };
 
+  // Auto-show navigation interface when an active session is detected
+  useEffect(() => {
+    if (currentSessionId && !showNavigation) {
+      // Automatically show navigation interface when session becomes active
+      setShowNavigation(true);
+    }
+  }, [currentSessionId, showNavigation]);
+
   if (showNavigation && currentSessionId) {
     return (
-      <RealTimeNavigationMap
+      <LostPersonNavigationInterface
         sessionId={currentSessionId}
-        userType="lost"
         profileId={profileId}
+        searcherName={undefined} // Could be extracted from session data if needed
         onClose={() => setShowNavigation(false)}
       />
     );

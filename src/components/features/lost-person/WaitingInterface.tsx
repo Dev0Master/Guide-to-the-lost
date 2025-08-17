@@ -15,7 +15,6 @@ interface WaitingInterfaceProps {
 
 export function WaitingInterface({ 
   profileId, 
-  onNavigationRequest, 
   onNewRegistration 
 }: WaitingInterfaceProps) {
   const { currentLanguage } = useLanguageStore();

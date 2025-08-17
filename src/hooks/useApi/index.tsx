@@ -1,6 +1,6 @@
 'use client'
 import { useState, useCallback, useEffect, useRef } from "react";
-import { AxiosResponse } from "axios";
+import { AxiosResponse, AxiosError } from "axios";
 import  apiClient  from "@/lib/axiosClients";
 import {
     ApiResponse,
@@ -19,7 +19,7 @@ import {
     createOptimisticItem
 } from './utils';
 
-export const useApiData = <T extends object = any>(
+export const useApiData = <T extends object = Record<string, unknown>>(
     endpoint: string, 
     options: UseApiDataOptions<T> = {}
 ): UseApiDataReturn<T> => {
@@ -46,7 +46,7 @@ export const useApiData = <T extends object = any>(
         ...initialParams,
     });
     const [loading, setLoading] = useState<LoadingState>({ post: false, put: false, delete: false });
-    const [errors, setErrors] = useState<ErrorState>({ post: null, put: null, delete: null });
+    const [, setErrors] = useState<ErrorState>({ post: null, put: null, delete: null });
     const [isInitialLoading, setIsInitialLoading] = useState(false);
     const [isFetching, setIsFetching] = useState(false);
     const [fetchError, setFetchError] = useState<string | null>(null);
@@ -79,7 +79,7 @@ export const useApiData = <T extends object = any>(
     const retry = useCallback(() => get(), []);
 
     // GET method
-    const get = useCallback(async (customEndpoint?: string | null): Promise<any> => {
+    const get = useCallback(async (customEndpoint?: string | null): Promise<unknown> => {
         const url = customEndpoint ? buildBaseURL(customEndpoint) : buildFetchURL(endpoint, params, limitItems, resourceId);
         
         if (!url) {
@@ -126,10 +126,11 @@ export const useApiData = <T extends object = any>(
             
             return dataRes.data;
 
-        } catch (error: any) {
-            if (error.name === 'AbortError' || !isMountedRef.current) return null;
+        } catch (error: unknown) {
+            const err = error as { name?: string; response?: { status?: number } };
+            if (err.name === 'AbortError' || !isMountedRef.current) return null;
 
-            if (retryAttempts < retryCount && error.response?.status !== 404) {
+            if (retryAttempts < retryCount && err.response?.status !== 404) {
                 setRetryAttempts(prev => prev + 1);
                 setTimeout(() => {
                     if (isMountedRef.current) get(customEndpoint);
@@ -148,7 +149,7 @@ export const useApiData = <T extends object = any>(
     }, [endpoint, params, limitItems, resourceId, data, retryAttempts, retryCount, retryDelay, infiniteScroll, cancel]);
 
     // POST method
-    const post = useCallback(async <K = any>(options: MutationOptions<K> = {}): Promise<any> => {
+    const post = useCallback(async <K = unknown>(options: MutationOptions<K> = {}): Promise<unknown> => {
         const { data: postData, customEndpoint, onSuccess, onError, optimistic = enableOptimisticUpdates } = options;
         const url = buildBaseURL(customEndpoint || endpoint);
 
@@ -180,7 +181,7 @@ export const useApiData = <T extends object = any>(
             onSuccess?.(apiResponse, postData);
             return apiResponse;
 
-        } catch (error: any) {
+        } catch (error: unknown) {
             if (optimistic && optimisticItems.length > 0) {
                 setOptimisticItems([]);
                 get();
@@ -188,7 +189,7 @@ export const useApiData = <T extends object = any>(
 
             const errorMsg = handleApiError(error);
             setErrors(prev => ({ ...prev, post: errorMsg }));
-            onError?.(error, postData);
+            onError?.(error as AxiosError, postData);
             throw error;
         } finally {
             if (isMountedRef.current) setLoading(prev => ({ ...prev, post: false }));
@@ -196,7 +197,7 @@ export const useApiData = <T extends object = any>(
     }, [endpoint, enableOptimisticUpdates, data, optimisticItems, get]);
 
     // PUT method
-    const put = useCallback(async <K = any>(options: MutationOptions<K> = {}): Promise<any> => {
+    const put = useCallback(async <K = unknown>(options: MutationOptions<K> = {}): Promise<unknown> => {
         const { data: putData, customEndpoint, onSuccess, onError, optimistic = enableOptimisticUpdates } = options;
         const url = buildBaseURL(customEndpoint || endpoint, resourceId);
 
@@ -211,10 +212,10 @@ export const useApiData = <T extends object = any>(
             onSuccess?.(apiResponse, putData);
             return apiResponse;
 
-        } catch (error: any) {
+        } catch (error: unknown) {
             const errorMsg = handleApiError(error);
             setErrors(prev => ({ ...prev, put: errorMsg }));
-            onError?.(error, putData);
+            onError?.(error as AxiosError, putData);
             throw error;
         } finally {
             if (isMountedRef.current) setLoading(prev => ({ ...prev, put: false }));
@@ -222,7 +223,7 @@ export const useApiData = <T extends object = any>(
     }, [endpoint, resourceId, enableOptimisticUpdates, get]);
 
     // DELETE method
-    const del = useCallback(async <K = any>(options: MutationOptions<K> = {}): Promise<any> => {
+    const del = useCallback(async <K = unknown>(options: MutationOptions<K> = {}): Promise<unknown> => {
         const { data: deleteData, customEndpoint, onSuccess, onError, optimistic = enableOptimisticUpdates } = options;
         const url = buildBaseURL(customEndpoint || endpoint, resourceId);
 
@@ -235,9 +236,9 @@ export const useApiData = <T extends object = any>(
                 ...currentData,
                 data: {
                     ...currentData.data,
-                    items: currentData.data.items.filter((item: any) => item.id !== resourceId)
+                    items: (currentData.data.items as unknown[]).filter((item: unknown) => (item as Record<string, unknown>).id !== resourceId)
                 }
-            });
+            } as ApiResponse<T>);
         }
 
         try {
@@ -249,11 +250,11 @@ export const useApiData = <T extends object = any>(
             onSuccess?.(apiResponse, deleteData);
             return apiResponse;
 
-        } catch (error: any) {
+        } catch (error: unknown) {
             if (optimistic) get();
             const errorMsg = handleApiError(error);
             setErrors(prev => ({ ...prev, delete: errorMsg }));
-            onError?.(error, deleteData);
+            onError?.(error as AxiosError, deleteData);
             throw error;
         } finally {
             if (isMountedRef.current) setLoading(prev => ({ ...prev, delete: false }));
@@ -266,7 +267,7 @@ export const useApiData = <T extends object = any>(
         }
     }, [pagination, params.page]);
 
-    const updateParams = useCallback((newParams: Record<string, any>, refetch: boolean = false): void => {
+    const updateParams = useCallback((newParams: Record<string, unknown>, refetch: boolean = false): void => {
         setParams(prev => ({ ...prev, ...newParams }));
         if (refetch && enableFetch) get();
     }, [enableFetch, get]);

@@ -175,7 +175,13 @@ export const formAnimations = {
     if (shouldReduceMotion()) return;
     
     gsap.to(element, {
-      x: [-10, 10, -5, 5, 0],
+      keyframes: [
+        { x: -10 },
+        { x: 10 },
+        { x: -5 },
+        { x: 5 },
+        { x: 0 }
+      ],
       duration: 0.4,
       ease: easing.quick
     });

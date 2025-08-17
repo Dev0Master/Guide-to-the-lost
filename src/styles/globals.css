@@ -43,37 +43,49 @@
 }
 :root {
   --radius: 0.75rem;
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.141 0.005 285.823);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.141 0.005 285.823);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.141 0.005 285.823);
-  --primary: oklch(0.723 0.219 149.579);
-  --primary-foreground: oklch(0.982 0.018 155.826);
-  --secondary: oklch(0.967 0.001 286.375);
-  --secondary-foreground: oklch(0.21 0.006 285.885);
-  --muted: oklch(0.967 0.001 286.375);
-  --muted-foreground: oklch(0.552 0.016 285.938);
-  --accent: oklch(0.967 0.001 286.375);
-  --accent-foreground: oklch(0.21 0.006 285.885);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.92 0.004 286.32);
-  --input: oklch(0.92 0.004 286.32);
-  --ring: oklch(0.723 0.219 149.579);
+  /* Age-friendly color scheme with high contrast */
+  --background: #ffffff;
+  --foreground: #1a1a1a;
+  --card: #ffffff;
+  --card-foreground: #1a1a1a;
+  --popover: #ffffff;
+  --popover-foreground: #1a1a1a;
+  /* Calming blue primary color for trust and clarity */
+  --primary: #2563eb;
+  --primary-foreground: #ffffff;
+  /* Warm gray secondary for friendly feeling */
+  --secondary: #f1f5f9;
+  --secondary-foreground: #334155;
+  --muted: #f8fafc;
+  --muted-foreground: #64748b;
+  --accent: #e0e7ff;
+  --accent-foreground: #3730a3;
+  /* Clear red for important actions */
+  --destructive: #dc2626;
+  --destructive-foreground: #ffffff;
+  /* Clear borders for better definition */
+  --border: #e2e8f0;
+  --input: #ffffff;
+  --ring: #3b82f6;
+  /* Success color for positive feedback */
+  --success: #16a34a;
+  --success-foreground: #ffffff;
+  /* Warning color for caution */
+  --warning: #f59e0b;
+  --warning-foreground: #ffffff;
   --chart-1: oklch(0.646 0.222 41.116);
   --chart-2: oklch(0.6 0.118 184.704);
   --chart-3: oklch(0.398 0.07 227.392);
   --chart-4: oklch(0.828 0.189 84.429);
   --chart-5: oklch(0.769 0.188 70.08);
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.141 0.005 285.823);
-  --sidebar-primary: oklch(0.723 0.219 149.579);
-  --sidebar-primary-foreground: oklch(0.982 0.018 155.826);
-  --sidebar-accent: oklch(0.967 0.001 286.375);
-  --sidebar-accent-foreground: oklch(0.21 0.006 285.885);
-  --sidebar-border: oklch(0.92 0.004 286.32);
-  --sidebar-ring: oklch(0.723 0.219 149.579);
+  --sidebar: #ffffff;
+  --sidebar-foreground: #1a1a1a;
+  --sidebar-primary: #2563eb;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #f1f5f9;
+  --sidebar-accent-foreground: #334155;
+  --sidebar-border: #e2e8f0;
+  --sidebar-ring: #3b82f6;
 }
 
 .dark {
@@ -117,7 +129,39 @@
   }
   body {
     @apply bg-background text-foreground;
+    /* Age-friendly typography */
+    font-size: 16px;
+    line-height: 1.6;
+    letter-spacing: 0.01em;
   }
+  
+  /* Large, readable headings */
+  h1 {
+    @apply text-3xl md:text-4xl font-bold leading-tight;
+    letter-spacing: -0.02em;
+  }
+  h2 {
+    @apply text-2xl md:text-3xl font-semibold leading-tight;
+  }
+  h3 {
+    @apply text-xl md:text-2xl font-semibold leading-snug;
+  }
+  h4 {
+    @apply text-lg md:text-xl font-medium leading-snug;
+  }
+  
+  /* Readable body text */
+  p {
+    @apply text-base md:text-lg leading-relaxed;
+  }
+  
+  /* Large, accessible form elements */
+  input, textarea, select {
+    @apply text-base md:text-lg;
+    min-height: 48px;
+  }
+  
+  /* Accessible buttons */
   button,
   [type="button"],
   [type="submit"],
@@ -128,6 +172,31 @@
   .btn-primary,
   .btn-secondary {
     cursor: pointer;
+    min-height: 48px;
+    min-width: 120px;
+    @apply text-base md:text-lg font-medium;
+  }
+  
+  /* Focus states for accessibility */
+  *:focus-visible {
+    @apply outline-2 outline-offset-2 outline-ring;
+  }
+  
+  /* High contrast mode support */
+  @media (prefers-contrast: high) {
+    :root {
+      --border: #000000;
+      --ring: #000000;
+    }
+  }
+  
+  /* Reduced motion support */
+  @media (prefers-reduced-motion: reduce) {
+    * {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
   }
 }
   
