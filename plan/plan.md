@@ -731,401 +731,235 @@ const { user, isAuthenticated, setAuth, clearAuth } = useAuthStore();
 
 ---
 
+## 🔧 Backend Architecture (Laravel)
 
+### Overview
 
-## 🧱 Architecture Layers
+The backend is built with Laravel, providing a robust REST API for the Guidance For Lost system. It handles user management, lost person registration, search functionality, and location tracking.
 
-### 1. **Data Layer** — `src/hooks/useApi/`
+### Key Features
 
-Handles **all API interactions** and **server state**:
+- JWT Authentication
+- Real-time Location Updates
+- Multi-language Support (AR, EN, FA)
+- File Upload Management
+- Fuzzy Search Implementation
+- Role-based Authorization
 
-- Custom hook: `useApiData()`
-- Supports:
-  - ✅ `GET`, `POST`, `PUT`, `DELETE`
-  - ✅ Request cancellation
-  - ✅ Race condition handling
-  - ✅ Retry logic
-  - ✅ Optimistic updates
-  - ✅ Caching
-  - ✅ Loading/error state management
-  - ✅ **Automatic Authentication** via Axios interceptors
-**Files:**
-- `index.tsx` – API hook logic  
-- `types.ts` – API response/request typings  
-- `utils.ts` – Utility helpers for error/response handling
-
-#### **🔐 Authentication Integration:**
-- **Axios Client** (`src/lib/axiosClients.ts`) automatically includes Bearer token in all requests
-- **Token Management** (`src/lib/tokenManager.ts`) handles localStorage + cookies sync
-- **Auto-redirect** to login on 401 errors
-
----
-
-### 2. **State Layer** — `src/store/{entity}/`
-
-Manages **UI state** per entity using **Zustand**:
-
-- Handles:
-  - ✅ Form modal state
-  - ✅ Filters & selections
-  - ✅ Bulk operations
-  - ✅ Form data + validation with **Zod**
-
-**Example (User Entity):**
-```
-src/store/users/
-  ├── userStore.ts         # Zustand store for UI state
-  ├── userValidation.ts    # Zod schema definitions
-  ├── userTypes.ts         # TypeScript types
-```
-
----
-### 3. api project
-- read file @plan\ImamZain API v2.postman_collection.json
-- this file api project 
-- contan data response and request for all endpoint project
-- if you don't know what data response or request tall me to send it to you (don't make it in you self)
-- not use /:lang perfix for endpoints in this cms this for public website 
-
-### 4. **Presentation Layer** — `src/components/{entity}/`
-
-Structured, reusable and modular UI components:
-
-- `common/` → Shared UI logic  
-- `features/` → Page-specific features  
-- `layouts/` → App layouts (e.g., sidebar, navbar)  
-- `ui/` → Wrapped/customized ShadCN UI components
-
----
-
-## 🔁 Data Flow
+### Project Structure
 
 ```
-User → Zustand Store → useApiData Hook → Axios (with Auth) → API Call → Store Update → UI Re-render
+├── app/
+│   ├── Console/
+│   ├── Exceptions/
+│   ├── Http/
+│   │   ├── Controllers/
+│   │   │   ├── API/
+│   │   │   │   ├── AuthController.php
+│   │   │   │   ├── LostPersonController.php
+│   │   │   │   ├── SearchController.php
+│   │   │   │   └── LocationController.php
+│   │   │   └── Controller.php
+│   │   ├── Middleware/
+│   │   │   ├── Authenticate.php
+│   │   │   ├── JwtMiddleware.php
+│   │   │   └── LocalizationMiddleware.php
+│   │   └── Requests/
+│   │       ├── LostPersonRequest.php
+│   │       └── SearchRequest.php
+│   ├── Models/
+│   │   ├── User.php
+│   │   ├── LostPerson.php
+│   │   ├── Location.php
+│   │   └── ReferencePoint.php
+│   └── Services/
+│       ├── SearchService.php
+│       ├── LocationService.php
+│       └── FileUploadService.php
+├── config/
+│   ├── jwt.php
+│   └── services.php
+├── database/
+│   ├── migrations/
+│   │   ├── create_users_table.php
+│   │   ├── create_lost_persons_table.php
+│   │   └── create_locations_table.php
+│   └── seeders/
+├── routes/
+│   └── api.php
+└── storage/
+    └── app/
+        └── public/
+            └── uploads/
 ```
 
-**Example Flow:**
+### Database Schema
 
-1. User clicks "Create User"
-2. Store opens modal and sets form state
-3. User fills form → Zod validates data
-4. On submit → `useApiData().post()` triggered
-5. **Axios automatically adds Bearer token** to request headers
-6. On success → Store updates → UI re-renders
-7. On 401 error → Auto-redirect to login page
-
-### **🔐 Authentication Flow:**
-
-```
-Login → Save Token (localStorage + Cookie) → All API Requests Include Token → Middleware Protects Routes
-```
-
-**Login Process:**
-1. User submits credentials via login form
-2. `POST /auth/login` → Server returns `{ accessToken, user }`
-3. Token saved to **localStorage** (for Axios) + **Cookie** (for middleware)
-4. Zustand auth store updated with user data
-5. Redirect to dashboard
-
-**Protected Request Process:**
-1. Any API call via `useApiData()`
-2. Axios interceptor adds `Authorization: Bearer {token}` header automatically
-3. Server validates token and processes request
-4. If token invalid (401) → Token cleared → Redirect to login
-
----
-
-## 🗂 File Structure (Simplified)
-
-```
-src/
-├── app/                    # Next.js pages and routing
-│    └── (auth)    
-│         └── login/ 
-│              └── page.tsx  
-│         └── layout.ts
-│    └── (home)              # handle protect router app
-│         └── page1/         
-│              └── page.tsx  
-│         └── layout.ts
-├── hooks/
-│   ├── useApi/               # API data management
-│   └── use-upload-file.ts    # Independent file upload hook
-├── store/{entity}/           # Zustand state & Zod validation
-│   ├── userStore.ts
-│   ├── userValidation.ts
-│   └── userTypes.ts
-├── components/{entity}/      # UI components per entity
-│   ├── common/
-│   │   ├── upload-file.tsx   # File upload component
-│   │   └── ...
-│   ├── features/
-│   ├── layouts/
-│   └── ui/
-├── lib/
-│   ├── axiosClients.ts       # Axios client with auth interceptors
-│   ├── tokenManager.ts       # Token management utilities
-│   ├── imageUtils.ts         # Image URL and validation utilities
-│   └── utils.ts              # General utilities
-├── middleware.ts             # Route protection with cookies
-└── types/
-    ├── attachment.ts         # File upload types
-    └── {routes}/            
+#### Users Table
+```sql
+CREATE TABLE users (
+    id bigint unsigned NOT NULL AUTO_INCREMENT,
+    name varchar(255) NOT NULL,
+    email varchar(255) NOT NULL UNIQUE,
+    password varchar(255) NOT NULL,
+    role enum('admin', 'staff', 'user') NOT NULL DEFAULT 'user',
+    created_at timestamp NULL DEFAULT NULL,
+    updated_at timestamp NULL DEFAULT NULL,
+    PRIMARY KEY (id)
+);
 ```
 
----
-
-## ⚙️ Usage Examples
-
-### **Basic API Usage (Auto-Authenticated)**
-```tsx
-// From Zustand Store (UI State)
-const { formData, setFormField } = useUserStore();
-
-// From API Hook (Server Data) - Token automatically included!
-const { data, post, loading, error } = useApiData('/api/users/');
+#### Lost Persons Table
+```sql
+CREATE TABLE lost_persons (
+    id bigint unsigned NOT NULL AUTO_INCREMENT,
+    name varchar(255) NOT NULL,
+    age_range varchar(50),
+    clothing_color varchar(100),
+    distinctive_feature text,
+    last_seen_location point,
+    contact_phone varchar(20),
+    status enum('active', 'found', 'cancelled') DEFAULT 'active',
+    created_at timestamp NULL DEFAULT NULL,
+    updated_at timestamp NULL DEFAULT NULL,
+    PRIMARY KEY (id)
+);
 ```
 
-### **Authentication Usage**
-```tsx
-// Login Process
-const { post } = useApiData('/auth/login');
-const { setAuth } = useAuthStore();
-
-const handleLogin = async (credentials) => {
-  await post({
-    data: credentials,
-    onSuccess: (response) => {
-      const { accessToken, user } = response.data;
-      setAuth(user, accessToken); // Saves to localStorage + cookie
-      router.push('/');
-    }
-  });
-};
-
-// Logout Process
-const { clearAuth } = useAuthStore();
-const handleLogout = () => {
-  clearAuth(); // Clears localStorage + cookie
-  router.push('/login');
-};
+#### Locations Table
+```sql
+CREATE TABLE locations (
+    id bigint unsigned NOT NULL AUTO_INCREMENT,
+    lost_person_id bigint unsigned NOT NULL,
+    latitude decimal(10,8) NOT NULL,
+    longitude decimal(11,8) NOT NULL,
+    timestamp timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (lost_person_id) REFERENCES lost_persons(id),
+    PRIMARY KEY (id)
+);
 ```
 
-### **Token Management**
-```tsx
-import { tokenManager } from '@/lib/tokenManager';
+### API Endpoints
 
-// Check if user is authenticated
-const isLoggedIn = tokenManager.hasToken();
-
-// Manual token operations (rarely needed)
-tokenManager.setToken('new-token');
-tokenManager.removeToken();
+#### Authentication
+```
+POST   /api/auth/login
+POST   /api/auth/register
+POST   /api/auth/logout
+GET    /api/auth/refresh
+GET    /api/auth/user
 ```
 
-### **File Upload Usage** (Independent Hook)
-```tsx
-import UploadFile from '@/components/common/upload-file';
-import { useUploadFile } from '@/hooks/use-upload-file';
-import type { UploadedFile } from '@/types/attachment';
-
-// Single file upload component
-<UploadFile
-  endpoint="/attachments/upload"
-  collection="articles"
-  type="image/*"
-  onValueChange={(file: UploadedFile) => {
-    setMainImageId(Number(file.id));
-  }}
-/>
-
-// Multiple files upload component
-<UploadFile
-  endpoint="/attachments/upload"
-  collection="documents"
-  multiple
-  type="image/*,application/pdf"
-  onValueChange={(files: UploadedFile[]) => {
-    setAttachmentIds(files.map(f => Number(f.id)));
-  }}
-/>
-
-// Using the upload hook directly (independent of useApiData)
-const { handleUploadFiles, files, uploadedFiles, deleteFile, finish, isUploading } = 
-  useUploadFile('/attachments/upload', true, undefined, { collection: 'articles' });
-
-// The upload hook uses direct axios calls with FormData
-// - No dependency on useApiData hook
-// - Direct FormData body with file + collection
-// - Built-in progress tracking and authentication
+#### Lost Person Management
+```
+POST   /api/lost-person
+GET    /api/lost-person/{id}
+PUT    /api/lost-person/{id}
+GET    /api/lost-person/search
 ```
 
----
-
-## 🧩 Adding a New Entity
-
-1. Duplicate an existing `store/{entity}` and `components/features/{entity}` folder
-2. Update `types`, `validation`, and API routes
-3. The rest (filtering, modals, CRUD, etc.) works automatically
-4. **No authentication setup needed** - All API calls are automatically authenticated!
-
----
-
-## 🎨 UI/UX Best Practices
-
-### Loading & Error States
-- **AVOID** full page refreshes for loading/error states
-- **USE** inline loading states within content areas
-- **SHOW** loading spinners in specific sections, not entire page
-- **DISPLAY** errors contextually within the content flow
-- **MAINTAIN** page layout and navigation during state changes
-
-### Image Handling
-- **ALWAYS** use Next.js `Image` component for optimized loading
-- **CONFIGURE** `next.config.ts` with allowed image domains/patterns
-- **USE** image utilities (`src/lib/imageUtils.ts`) for consistent URL handling
-- **VALIDATE** image paths before rendering
-- **PROVIDE** meaningful alt text for accessibility
-
-### Example Implementations
-
-#### Loading States
-```tsx
-// ❌ Bad - Full page loading
-if (isLoading) return <div>Loading...</div>
-
-// ✅ Good - Contextual loading
-<div className="content-area">
-  {isLoading ? (
-    <div className="flex justify-center p-8">
-      <Loader2 className="animate-spin" />
-    </div>
-  ) : (
-    <ContentComponent data={data} />
-  )}
-</div>
+#### Location Tracking
+```
+POST   /api/location/update
+GET    /api/location/{lost_person_id}
+GET    /api/location/nearby
 ```
 
-#### Image Handling
-```tsx
-import Image from "next/image";
-import { getImageUrl, getImageAlt, isValidImagePath } from "@/lib/imageUtils";
+### Search Implementation
 
-// ❌ Bad - Direct path without validation
-<img src={`http://localhost:8000/${imagePath}`} alt="image" />
+The backend implements fuzzy search using the following weighted criteria:
 
-// ✅ Good - Proper Next.js Image with utilities
-{imageData && isValidImagePath(imageData.path) && (
-  <div className="relative h-64 w-full">
-    <Image
-      src={getImageUrl(imageData.path)}
-      alt={getImageAlt(imageData.altText, "الصورة الافتراضية")}
-      fill
-      className="object-cover"
-    />
-  </div>
-)}
+1. Name Matching (40%)
+   - Levenshtein distance for name comparison
+   - Phonetic matching using Soundex
+   
+2. Location Proximity (30%)
+   - Haversine formula for distance calculation
+   - Geospatial indexing for efficient queries
 
-// ✅ Good - With fallback for missing images
-{imageData && isValidImagePath(imageData.path) ? (
-  <Image
-    src={getImageUrl(imageData.path)}
-    alt={getImageAlt(imageData.altText)}
-    width={400}
-    height={300}
-    className="rounded-lg"
-  />
-) : (
-  <div className="w-full h-64 bg-gray-200 flex items-center justify-center rounded-lg">
-    <span className="text-gray-500">لا توجد صورة</span>
-  </div>
-)}
-```
+3. Clothing Color (20%)
+   - Color similarity matching
+   - Basic color group matching
 
-#### Next.js Configuration
-```tsx
-// next.config.ts
-const nextConfig: NextConfig = {
-  images: {
-    remotePatterns: [
-      {
-        protocol: 'http',
-        hostname: 'localhost',
-        port: '8000',
-        pathname: '/uploads/**',
-      },
-      // Add production domains here
-    ],
-  },
-};
-```
+4. Age Range (10%)
+   - Range overlap calculation
+   - Fuzzy age group matching
 
----
-
-## 📁 File Upload Architecture
-
-### **Independent Upload System**
-File uploads are handled by a **separate hook** that doesn't depend on `useApiData`:
-
-- **Direct Axios Integration**: Uses `apiClient` directly for FormData uploads
-- **FormData Structure**: Automatically sends `file` + `collection` fields
-- **Progress Tracking**: Real-time upload progress with percentage
-- **Authentication**: Automatic token inclusion via axios interceptors
-- **Type Safety**: Full TypeScript support with attachment types
-
-### **Key Components**
-
-#### **1. Upload Hook** (`src/hooks/use-upload-file.ts`)
-```tsx
-// Independent hook with direct axios calls
-const { handleUploadFiles, files, uploadedFiles, deleteFile, finish, isUploading } = 
-  useUploadFile(endpoint, multiple, initialValue, { collection });
-
-// Features:
-// - FormData with file + collection
-// - Progress tracking via onUploadProgress
-// - Server-side file deletion
-// - No dependency on useApiData
-```
-
-#### **2. Upload Component** (`src/components/common/upload-file.tsx`)
-```tsx
-<UploadFile
-  endpoint="/attachments/upload"
-  collection="articles"        // Required: documents, articles, etc.
-  type="image/*"              // File type restriction
-  multiple={true}             // Single or multiple files
-  onValueChange={callback}    // Returns UploadedFile[]
-/>
-```
-
-#### **3. API Structure** (Based on Postman Collection)
-```
-POST /attachments/upload
-Content-Type: multipart/form-data
-
-Body:
-- file: [File]
-- collection: "documents" | "articles" | etc.
-
-Response:
-{
-  "status": "success",
-  "data": {
-    "id": 123,
-    "originalName": "image.jpg",
-    "path": "uploads/articles/image.jpg",
-    ...
-  }
+```php
+// SearchService.php example
+public function search($criteria) {
+    return LostPerson::query()
+        ->when($criteria->name, function($query, $name) {
+            return $query->whereRaw('SOUNDEX(name) = SOUNDEX(?)', [$name]);
+        })
+        ->when($criteria->location, function($query, $location) {
+            return $query->whereRaw(
+                'ST_Distance_Sphere(last_seen_location, POINT(?, ?)) <= ?',
+                [$location->lng, $location->lat, 5000]
+            );
+        })
+        ->when($criteria->clothingColor, function($query, $color) {
+            return $query->where('clothing_color', 'LIKE', "%$color%");
+        })
+        ->orderByRaw('MATCH(name) AGAINST(?) DESC', [$criteria->name])
+        ->limit(7)
+        ->get();
 }
 ```
 
-### **Separation from useApiData**
-- ✅ **Independent**: Upload hook doesn't use `useApiData`
-- ✅ **Direct FormData**: Sends FormData body directly via axios
-- ✅ **Clean Architecture**: Keeps data fetching and file uploads separate
-- ✅ **Specialized**: Optimized specifically for file upload operations
+### File Upload Handling
 
----
+The backend handles file uploads through a dedicated service:
 
-## 🔐 Authentication Architecture
+```php
+// FileUploadService.php
+public function uploadFile($file, $directory = 'uploads') {
+    $filename = time() . '_' . $file->getClientOriginalName();
+    $path = $file->storeAs($directory, $filename, 'public');
+    
+    return [
+        'filename' => $filename,
+        'path' => $path,
+        'url' => Storage::url($path)
+    ];
+}
+```
+
+### Security Measures
+
+1. **JWT Authentication**
+   - Token-based authentication
+   - Refresh token mechanism
+   - Token blacklisting
+
+2. **Input Validation**
+   - Request validation using Form Requests
+   - Sanitization of user inputs
+   - XSS protection
+
+3. **Authorization**
+   - Role-based access control
+   - Policy-based authorization
+   - Resource ownership validation
+
+4. **Rate Limiting**
+   - API rate limiting
+   - Throttling on sensitive endpoints
+   - DDoS protection
+
+### Performance Optimizations
+
+1. **Database**
+   - Indexed fields for search
+   - Geospatial indexing
+   - Query optimization
+
+2. **Caching**
+   - Redis for caching
+   - Query result caching
+   - File cache for static assets
+
+3. **API Response**
+   - Resource transformation
+   - Eager loading relationships
+   - Pagination implementation

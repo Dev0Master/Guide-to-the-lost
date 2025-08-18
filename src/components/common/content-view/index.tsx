@@ -4,25 +4,25 @@
 import React, { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Search, Grid, List } from "lucide-react";
+import { Grid, List } from "lucide-react";
 // import Dropdowns from "@/components/dropdowns";
 
 // import { useTableIsCardContext } from "@/context/table-view-context"; // Context not implemented
 import CardView from "./card-view";
 import TableView from "./table-view";
 import CustomPagination from "./custom-pagination";
-import { Card, CardContent } from "../ui/card";
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "../ui/select";
+// import { Card, CardContent } from "@/components/ui/card";
+// import {
+//   Select,
+//   SelectContent,
+//   SelectGroup,
+//   SelectItem,
+//   SelectTrigger,
+//   SelectValue,
+// } from "@/components/ui/select";
 
 export interface ColumnDef<T> {
-  key: keyof T | String;
+  key: keyof T | string;
   label: string;
   width?: number;
   align?: "start" | "center" | "end";
@@ -50,9 +50,7 @@ export default function ContentView<T extends { id: React.Key }>({
   data,
   isLoading,
   isError,
-  error,
   onSearch,
-  onCategory,
 
   onPageSelect,
   page,
@@ -93,20 +91,14 @@ export default function ContentView<T extends { id: React.Key }>({
               onSelectionChange={onCategory}
             />
           )} */}
-        <Select direction={"rtl"}>
-          <SelectTrigger className="w-[180px]">
-            <SelectValue placeholder="Select a fruit" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectGroup> 
-              <SelectItem value="apple">Apple</SelectItem>
-              <SelectItem value="banana">Banana</SelectItem>
-              <SelectItem value="blueberry">Blueberry</SelectItem>
-              <SelectItem value="grapes">Grapes</SelectItem>
-              <SelectItem value="pineapple">Pineapple</SelectItem>
-            </SelectGroup>
-          </SelectContent>
-        </Select>
+        <select className="w-[180px] p-2 border border-gray-300 rounded" dir="rtl">
+          <option value="">Select a fruit</option>
+          <option value="apple">Apple</option>
+          <option value="banana">Banana</option>
+          <option value="blueberry">Blueberry</option>
+          <option value="grapes">Grapes</option>
+          <option value="pineapple">Pineapple</option>
+        </select>
         </div>
         {SwitchView && (
           <Button

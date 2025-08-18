@@ -1,15 +1,15 @@
 // components/content-view/TableView.tsx
 import React from "react";
-import {
-  Table,
-  TableHeader,
-  TableBody,
-  TableRow,
-  TableHead,
-  TableCell,
-} from "@/components/ui/table";
-import { ColumnDef, PaginatedData } from "./inadex";
-import { Card, CardContent } from "../ui/card";
+// import {
+//   Table,
+//   TableHeader,
+//   TableBody,
+//   TableRow,
+//   TableHead,
+//   TableCell,
+// } from "@/components/ui/table";
+import { ColumnDef, PaginatedData } from "./index";
+import { Card, CardContent } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 
 export interface TableViewProps<T extends { id: React.Key }> {
@@ -24,37 +24,37 @@ export default function TableView<T extends { id: React.Key }>({
   return (
     <Card className="p-2">
       <CardContent className="p-2 ">
-        <Table>
-          <TableHeader className="sticky top-0 z-10 bg-muted ">
-            <TableRow>
+        <table className="w-full border-collapse">
+          <thead className="sticky top-0 z-10 bg-gray-50">
+            <tr>
               {columns.map((col) => (
-                <TableHead
-                  className="!text-start"
+                <th
+                  className="text-start p-2 border-b"
                   key={String(col.key)}
                   style={{ width: col.width, textAlign: col.align }}
                 >
                   {col.label}
-                </TableHead>
+                </th>
               ))}
-            </TableRow>
-          </TableHeader>
-          <TableBody className="**:data-[slot=table-cell]:first:w-8">
+            </tr>
+          </thead>
+          <tbody>
             {tableData.results.map((item) => (
-              <TableRow
+              <tr
                 key={item.id}
-                className="relative z-0 data-[dragging=true]:z-10 data-[dragging=true]:opacity-80"
+                className="relative z-0 hover:bg-gray-50"
               >
                 {columns.map((col) => {
                   // If it's our "actions" column, we only run render()
                   if (col.key === "actions") {
                     return (
-                      <TableCell
+                      <td
                         key="actions"
-                        className={cn(col.width ? `w-[${col.width}px]` : "")}
+                        className={cn(col.width ? `w-[${col.width}px]` : "", "p-2 border-b")}
                         style={{ textAlign: col.align }}
                       >
                         {col.render?.(item)}
-                      </TableCell>
+                      </td>
                     );
                   }
 
@@ -65,19 +65,19 @@ export default function TableView<T extends { id: React.Key }>({
                     : String(item[dataKey] ?? "");
 
                   return (
-                    <TableCell
+                    <td
                       key={String(col.key)}
-                      className={cn(col.width ? `w-[${col.width}px]` : "")}
+                      className={cn(col.width ? `w-[${col.width}px]` : "", "p-2 border-b")}
                       style={{ width: col.width, textAlign: col.align }}
                     >
                       {value}
-                    </TableCell>
+                    </td>
                   );
                 })}
-              </TableRow>
+              </tr>
             ))}
-          </TableBody>
-        </Table>
+          </tbody>
+        </table>
       </CardContent>
     </Card>
   );

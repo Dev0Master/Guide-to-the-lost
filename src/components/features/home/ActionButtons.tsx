@@ -12,30 +12,30 @@ export function ActionButtons() {
   const lostButtonRef = useRef<HTMLButtonElement>(null);
   const searchButtonRef = useRef<HTMLButtonElement>(null);
 
-  const handleButtonHover = (ref: React.RefObject<HTMLButtonElement>) => {
+  const handleButtonHover = (ref: React.RefObject<HTMLButtonElement | null>) => {
     if (ref.current) {
       buttonAnimations.hover(ref.current);
     }
   };
 
-  const handleButtonLeave = (ref: React.RefObject<HTMLButtonElement>) => {
+  const handleButtonLeave = (ref: React.RefObject<HTMLButtonElement | null>) => {
     if (ref.current) {
       buttonAnimations.leave(ref.current);
     }
   };
 
-  const handleButtonPress = (ref: React.RefObject<HTMLButtonElement>) => {
+  const handleButtonPress = (ref: React.RefObject<HTMLButtonElement | null>) => {
     if (ref.current) {
       buttonAnimations.press(ref.current);
     }
   };
 
   return (
-    <div className="flex flex-col sm:flex-row gap-4 justify-center mb-8">
+    <div className="flex flex-col sm:flex-row gap-6 justify-center items-center">
       <Button 
         ref={lostButtonRef}
-        size="lg" 
-        className="px-8 py-3 text-lg"
+        size="xl" 
+        className="w-full sm:w-auto min-w-[200px]"
         onClick={() => router.push('/lost-person')}
         onMouseEnter={() => handleButtonHover(lostButtonRef)}
         onMouseLeave={() => handleButtonLeave(lostButtonRef)}
@@ -45,9 +45,9 @@ export function ActionButtons() {
       </Button>
       <Button 
         ref={searchButtonRef}
-        size="lg" 
+        size="xl" 
         variant="outline" 
-        className="px-8 py-3 text-lg"
+        className="w-full sm:w-auto min-w-[200px]"
         onClick={() => router.push('/find-person')}
         onMouseEnter={() => handleButtonHover(searchButtonRef)}
         onMouseLeave={() => handleButtonLeave(searchButtonRef)}

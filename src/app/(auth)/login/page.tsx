@@ -65,7 +65,16 @@ export default function LoginPage() {
     await post({
       data: formData,
       onSuccess: (response) => {
-        const { accessToken, user } = response;
+        const loginResponse = response as LoginResponse;
+        const { accessToken, user: apiUser } = loginResponse.data;
+        // Map API user structure to Auth store User structure
+        const user = {
+          id: apiUser.id.toString(),
+          displayName: apiUser.name,
+          email: apiUser.email,
+          role: apiUser.role,
+          disabled: false
+        };
         setAuth(user, accessToken);
         router.push('/');
       },
@@ -76,7 +85,11 @@ export default function LoginPage() {
         } else if (error.code === 'ECONNREFUSED' || error.code === 'ERR_NETWORK') {
           setError(t.connectionError);
         } else {
-          setError(error.response?.data?.message || t.connectionError);
+          const message =
+            error.response?.data && typeof error.response.data === "object" && "message" in error.response.data
+              ? (error.response.data as { message?: string }).message
+              : undefined;
+          setError(message || t.connectionError);
         }
       }
     });

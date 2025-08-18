@@ -2,12 +2,29 @@ import * as React from "react"
 
 import { cn } from "@/lib/utils"
 
-function Card({ className, ...props }: React.ComponentProps<"div">) {
+interface CardProps extends React.ComponentProps<"div"> {
+  as?: 'div' | 'article' | 'section'
+  interactive?: boolean
+}
+
+function Card({ className, as: Component = 'div', interactive = false, ...props }: CardProps) {
   return (
-    <div
+    <Component
       data-slot="card"
+      role={interactive ? 'button' : undefined}
+      tabIndex={interactive ? 0 : undefined}
       className={cn(
-        "bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm",
+<<<<<<< HEAD
+        "bg-card text-card-foreground flex flex-col gap-6 rounded-xl border-2 border-border py-8 px-6 shadow-lg transition-all duration-200",
+        // Enhanced shadow and hover effects
+        "hover:shadow-xl focus-within:shadow-xl",
+        // Interactive card support
+        interactive && "cursor-pointer hover:bg-card/95 focus-visible:ring-4 focus-visible:ring-ring/40 focus-visible:ring-offset-2 focus-visible:ring-offset-background",
+        // Better spacing for touch targets
+        "min-h-[120px]",
+=======
+        "bg-card text-card-foreground flex flex-col gap-6 rounded-xl border-2 border-border py-8 px-6 shadow-lg hover:shadow-xl transition-shadow duration-200",
+>>>>>>> 0b8b9e88898342a781af43426cec2fff85362bb8
         className
       )}
       {...props}
@@ -20,7 +37,7 @@ function CardHeader({ className, ...props }: React.ComponentProps<"div">) {
     <div
       data-slot="card-header"
       className={cn(
-        "@container/card-header grid auto-rows-min grid-rows-[auto_auto] items-start gap-1.5 px-6 has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6",
+        "@container/card-header grid auto-rows-min grid-rows-[auto_auto] items-start gap-3 px-6 has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6",
         className
       )}
       {...props}
@@ -28,21 +45,44 @@ function CardHeader({ className, ...props }: React.ComponentProps<"div">) {
   )
 }
 
-function CardTitle({ className, ...props }: React.ComponentProps<"div">) {
+interface CardTitleProps extends React.ComponentProps<"h3"> {
+  as?: 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6'
+}
+
+function CardTitle({ className, as: Component = 'h3', ...props }: CardTitleProps) {
   return (
-    <div
+    <Component
       data-slot="card-title"
-      className={cn("leading-none font-semibold", className)}
+<<<<<<< HEAD
+      className={cn(
+        "text-2xl md:text-3xl leading-tight font-bold text-foreground mb-2",
+        // Enhanced contrast for readability
+        "contrast-more:text-black dark:contrast-more:text-white",
+        className
+      )}
+=======
+      className={cn("text-xl md:text-2xl leading-tight font-bold text-foreground", className)}
+>>>>>>> 0b8b9e88898342a781af43426cec2fff85362bb8
       {...props}
     />
   )
 }
 
-function CardDescription({ className, ...props }: React.ComponentProps<"div">) {
+
+function CardDescription({ className, ...props }: React.ComponentProps<"p">) {
   return (
-    <div
+    <p
       data-slot="card-description"
-      className={cn("text-muted-foreground text-sm", className)}
+<<<<<<< HEAD
+      className={cn(
+        "text-muted-foreground text-lg md:text-xl leading-relaxed mb-4",
+        // Enhanced contrast and readability
+        "contrast-more:text-gray-700 dark:contrast-more:text-gray-300",
+        className
+      )}
+=======
+      className={cn("text-muted-foreground text-base md:text-lg leading-relaxed", className)}
+>>>>>>> 0b8b9e88898342a781af43426cec2fff85362bb8
       {...props}
     />
   )

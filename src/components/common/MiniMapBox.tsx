@@ -29,8 +29,6 @@ export default function MiniMapBox({
   value, 
   onChange, 
   initialCoordinates, 
-  onLocationSelect, 
-  isSelectable = true, 
   showPin = false, 
   personName 
 }: MiniMapBoxProps) {
@@ -206,10 +204,10 @@ export default function MiniMapBox({
             const p = markerRef.current!.getLngLat();
             const c = clampLngLatToBounds(p.lng, p.lat);
             markerRef.current!.setLngLat([c.lng, c.lat]);
-            onChange({ lat: c.lat, lng: c.lng });
+            onChange?.({ lat: c.lat, lng: c.lng });
           });
       }
-      onChange({ lat: A, lng: L });
+      onChange?.({ lat: A, lng: L });
     };
 
     if (value) placeOrMoveMarker(value.lng, value.lat);

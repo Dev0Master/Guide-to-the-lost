@@ -7,6 +7,7 @@ import { Card } from "@/components/ui/card";
 import { useLanguageStore } from "@/store/language/languageStore";
 import { getDirectionalClasses } from "@/lib/rtl-utils";
 import { ProfileMapModal } from "./ProfileMapModal";
+import { AlertDialog, useAlertDialog } from "@/components/ui/alert-dialog";
 
 interface SearchResult {
   id: string;
@@ -41,6 +42,7 @@ export function SearchResultsModal({
   const { currentLanguage } = useLanguageStore();
   const dir = getDirectionalClasses(currentLanguage);
   const [selectedProfile, setSelectedProfile] = useState<SearchResult | null>(null);
+  const { alertProps, showAlert } = useAlertDialog();
 
   return (
     <>
@@ -141,14 +143,28 @@ export function SearchResultsModal({
                         <Button
                           size="sm"
                           onClick={() => {
-                            if (confirm(
-                              currentLanguage === 'ar' 
+                            const profileId = result.id;
+                            const profileName = result.displayName;
+                            
+                            showAlert({
+                              type: 'warning',
+                              title: currentLanguage === 'ar' ? 'تأكيد بدء التتبع' : 'Confirm Tracking',
+                              description: currentLanguage === 'ar' 
                                 ? 'هل أنت متأكد من بدء تتبع هذا الشخص؟ سيتم إشعارهم بأنك تحاول الوصول إليهم.'
-                                : 'Are you sure you want to start tracking this person? They will be notified that you are trying to reach them.'
-                            )) {
-                              onStartTracking(result.id, result.displayName);
-                              onClose();
-                            }
+                                : 'Are you sure you want to start tracking this person? They will be notified that you are trying to reach them.',
+                              confirmText: currentLanguage === 'ar' ? 'بدء التتبع' : 'Start Tracking',
+                              cancelText: currentLanguage === 'ar' ? 'إلغاء' : 'Cancel',
+                              showCancel: true,
+                              onConfirm: async () => {
+                                console.log('[SearchResultsModal] Confirming tracking for:', { profileId, profileName });
+                                
+                                // Call onStartTracking and wait for completion
+                                await onStartTracking(profileId, profileName);
+                                
+                                // Close the modal after successful tracking start
+                                onClose();
+                              }
+                            });
                           }}
                           className="bg-green-600 hover:bg-green-700"
                         >
@@ -183,6 +199,9 @@ export function SearchResultsModal({
           }}
         />
       )}
+
+      {/* Confirmation Alert Dialog */}
+      <AlertDialog {...alertProps} />
     </>
   );
 }

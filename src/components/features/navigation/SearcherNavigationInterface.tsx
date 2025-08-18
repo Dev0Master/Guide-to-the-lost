@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -8,6 +8,7 @@ import { useLanguageStore } from "@/store/language/languageStore";
 import { getDirectionalClasses } from "@/lib/rtl-utils";
 import { RealTimeNavigationMap } from "./RealTimeNavigationMap";
 import { Navigation, ArrowLeft, MapPin } from "lucide-react";
+import ErrorBoundary from "@/components/common/ErrorBoundary";
 
 interface SearcherNavigationInterfaceProps {
   sessionId: string;
@@ -28,12 +29,20 @@ export function SearcherNavigationInterface({
 
   if (showFullNavigation) {
     return (
-      <RealTimeNavigationMap
-        sessionId={sessionId}
-        userType="searcher"
-        profileId={targetProfileId}
-        onClose={() => setShowFullNavigation(false)}
-      />
+      <ErrorBoundary
+        fallbackTitle={currentLanguage === 'ar' ? 'خطأ في التنقل' : 'Navigation Error'}
+        fallbackMessage={currentLanguage === 'ar' 
+          ? 'حدث خطأ في واجهة التنقل. يرجى إعادة تحميل الصفحة.' 
+          : 'An error occurred in the navigation interface. Please reload the page.'
+        }
+      >
+        <RealTimeNavigationMap
+          sessionId={sessionId}
+          userType="searcher"
+          profileId={targetProfileId}
+          onClose={() => setShowFullNavigation(false)}
+        />
+      </ErrorBoundary>
     );
   }
 
@@ -81,7 +90,7 @@ export function SearcherNavigationInterface({
               {currentLanguage === 'ar' ? 'التوجيه المباشر' : 'Live Navigation'}
             </h3>
             <p className={`text-sm text-gray-600 mb-4 ${dir.textAlign}`}>
-              {currentLanguage === 'ar' 
+              {currentLanguage === 'ar'
                 ? 'اعرض الخريطة المباشرة مع مواقع كلا الطرفين والتوجيهات'
                 : 'View live map with both locations and turn-by-turn directions'
               }

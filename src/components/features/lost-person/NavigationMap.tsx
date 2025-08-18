@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useLanguageStore } from "@/store/language/languageStore";
@@ -29,6 +29,42 @@ export function NavigationMap({
   // API hook for location updates
   const { post: updateLocation } = useApiData(`/gfl/profiles/${profileId}/location`);
   const { post: updateSessionLocation } = useApiData(sessionId ? `/sessions/${sessionId}/searcher/location` : '/sessions/dummy/searcher/location');
+
+  const updateLocationToBackend = useCallback(async (coords: {lat: number, lng: number}) => {
+    if (isUpdatingLocation) return; // Prevent multiple simultaneous updates
+    
+    setIsUpdatingLocation(true);
+    
+    try {
+      // Update profile location
+      await updateLocation({
+        data: coords,
+        onSuccess: () => {
+          console.log('Profile location updated successfully');
+        },
+        onError: (error) => {
+          console.error('Failed to update profile location:', error);
+        }
+      });
+
+      // Update session location if session exists
+      if (sessionId) {
+        await updateSessionLocation({
+          data: coords,
+          onSuccess: () => {
+            console.log('Session location updated successfully');
+          },
+          onError: (error) => {
+            console.error('Failed to update session location:', error);
+          }
+        });
+      }
+    } catch (error) {
+      console.error('Location update error:', error);
+    } finally {
+      setIsUpdatingLocation(false);
+    }
+  }, [isUpdatingLocation, updateLocation, sessionId, updateSessionLocation]);
 
   // Track user location continuously
   useEffect(() => {
@@ -74,43 +110,7 @@ export function NavigationMap({
         navigator.geolocation.clearWatch(watchId);
       }
     };
-  }, [profileId, sessionId, currentLanguage]);
-
-  const updateLocationToBackend = async (coords: {lat: number, lng: number}) => {
-    if (isUpdatingLocation) return; // Prevent multiple simultaneous updates
-    
-    setIsUpdatingLocation(true);
-    
-    try {
-      // Update profile location
-      await updateLocation({
-        data: coords,
-        onSuccess: () => {
-          console.log('Profile location updated successfully');
-        },
-        onError: (error) => {
-          console.error('Failed to update profile location:', error);
-        }
-      });
-
-      // Update session location if session exists
-      if (sessionId) {
-        await updateSessionLocation({
-          data: coords,
-          onSuccess: () => {
-            console.log('Session location updated successfully');
-          },
-          onError: (error) => {
-            console.error('Failed to update session location:', error);
-          }
-        });
-      }
-    } catch (error) {
-      console.error('Location update error:', error);
-    } finally {
-      setIsUpdatingLocation(false);
-    }
-  };
+  }, [profileId, sessionId, currentLanguage, updateLocationToBackend]);
 
   const handleManualLocationUpdate = () => {
     if (currentLocation) {
