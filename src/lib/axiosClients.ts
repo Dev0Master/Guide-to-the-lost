@@ -29,25 +29,10 @@ apiClient.interceptors.request.use(
   }
 );
 
-// Response interceptor to handle token expiration and network errors
+// Response interceptor to handle token expiration
 apiClient.interceptors.response.use(
   (response) => response,
   (error) => {
-    // Handle different error scenarios
-    if (error.code === 'ERR_NETWORK' || error.code === 'ERR_BAD_REQUEST') {
-      console.error('API Network Error:', {
-        code: error.code,
-        message: error.message,
-        baseURL: BASE_URL,
-        isProduction: process.env.NODE_ENV === 'production'
-      });
-      
-      // In production, show a more user-friendly error
-      if (process.env.NODE_ENV === 'production') {
-        error.message = 'Backend service is currently unavailable. Please try again later.';
-      }
-    }
-    
     if (error.response?.status === 401) {
       // Token expired or invalid
       tokenManager.removeToken();
@@ -57,16 +42,6 @@ apiClient.interceptors.response.use(
         window.location.href = '/login';
       }
     }
-    
-    if (error.response?.status === 400) {
-      console.error('API Bad Request:', {
-        url: error.config?.url,
-        method: error.config?.method,
-        data: error.config?.data,
-        response: error.response?.data
-      });
-    }
-    
     return Promise.reject(error);
   }
 );

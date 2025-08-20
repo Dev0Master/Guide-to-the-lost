@@ -41,12 +41,8 @@ export const buildFetchURL = (
     return url.href.includes("/undefined/") ? null : `${url.pathname}${url.search}`;
 };
 
-export const handleApiError = (error: unknown): string => {
-    if (error && typeof error === 'object' && 'response' in error) {
-        const axiosError = error as { response?: { data?: { message?: string } } };
-        return axiosError.response?.data?.message || "Request failed";
-    }
-    return "Request failed";
+export const handleApiError = (error: any): string => {
+    return error.response?.data?.message || "Request failed";
 };
 
 export const createOptimisticItem = <T>(data: T): T & { __optimistic: boolean } => {

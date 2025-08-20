@@ -1,13 +1,17 @@
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/button";
 import { useLanguageStore } from "@/store/language/languageStore";
 import { lostPersonTranslations, getFeatureTranslations } from "@/localization";
 import { getDirectionalClasses } from "@/lib/rtl-utils";
 
 interface FormData {
   displayName: string;
-  description?: string;
-  contact?: string;
+  age: number;
+  clothingColor: string;
+  distinctiveFeature: string;
+  phone: string;
+  consent: boolean;
 }
 
 interface PersonalInfoFormProps {
@@ -24,6 +28,16 @@ export function PersonalInfoForm({ formData, setFormData, children }: PersonalIn
 
 
 
+  const clothingColors = [
+    t.colors.white,
+    t.colors.black,
+    t.colors.blue,
+    t.colors.red,
+    t.colors.green,
+    t.colors.yellow,
+    t.colors.brown,
+    t.colors.gray
+  ];
 
   return (
     <>
@@ -37,43 +51,81 @@ export function PersonalInfoForm({ formData, setFormData, children }: PersonalIn
           required
           className={dir.textAlign}
           value={formData.displayName}
-          onChange={(e) => setFormData({ ...formData, displayName: e.target.value })}
+          onChange={(e) => setFormData({...formData, displayName: e.target.value})}
           placeholder={t.displayNamePlaceholder}
         />
       </div>
+
       <div>
-        <Label htmlFor="description" className={`${dir.textAlign} block mb-2`}>
-          {currentLanguage === 'ar' ? 'وصف قصير (اختياري)' : currentLanguage === 'en' ? 'Short Description (optional)' : 'توضیح کوتاه (اختیاری)'}
+        <Label htmlFor="age" className={`${dir.textAlign} block mb-2`}>
+          {t.age}
         </Label>
         <Input
-          id="description"
-          type="text"
+          id="age"
+          type="number"
+          min="0"
+          max="120"
+          required
           className={dir.textAlign}
-          value={formData.description || ''}
-          onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-          placeholder={currentLanguage === 'ar' ? 'مثال: أرتدي نظارة' : currentLanguage === 'en' ? 'e.g. wearing glasses' : 'مثلاً عینک دارم'}
+          value={formData.age || ''}
+          onChange={(e) => setFormData({...formData, age: parseInt(e.target.value) || 0})}
+          placeholder={t.agePlaceholder}
         />
       </div>
+
       <div>
-        <Label htmlFor="contact" className={`${dir.textAlign} block mb-2`}>
-          {currentLanguage === 'ar' ? 'رقم للتواصل (اختياري)' : currentLanguage === 'en' ? 'Contact (optional)' : 'شماره تماس (اختیاری)'}
+        <Label className={`${dir.textAlign} block mb-2`}>{t.clothingColor}</Label>
+        <div className="grid grid-cols-4 gap-2">
+          {clothingColors.map((color) => (
+            <Button
+              key={color}
+              type="button"
+              variant={formData.clothingColor === color ? "default" : "outline"}
+              onClick={() => setFormData({...formData, clothingColor: color})}
+              className="text-sm"
+            >
+              {color}
+            </Button>
+          ))}
+        </div>
+      </div>
+
+      <div>
+        <Label htmlFor="distinctiveFeature" className={`${dir.textAlign} block mb-2`}>
+          {t.distinctiveFeature}
         </Label>
         <Input
-          id="contact"
+          id="distinctiveFeature"
           type="text"
           className={dir.textAlign}
-          value={formData.contact || ''}
-          onChange={(e) => setFormData({ ...formData, contact: e.target.value })}
-          placeholder={currentLanguage === 'ar' ? 'مثال: 0501234567' : currentLanguage === 'en' ? 'e.g. 0501234567' : 'مثلاً 09121234567'}
+          value={formData.distinctiveFeature}
+          onChange={(e) => setFormData({...formData, distinctiveFeature: e.target.value})}
+          placeholder={t.distinctiveFeaturePlaceholder}
         />
       </div>
+
+      <div>
+        <Label htmlFor="phone" className={`${dir.textAlign} block mb-2`}>
+          {t.phoneNumber}
+        </Label>
+        <Input
+          id="phone"
+          type="tel"
+          required
+          className={dir.textAlign}
+          value={formData.phone}
+          onChange={(e) => setFormData({...formData, phone: e.target.value})}
+          placeholder={t.phoneNumberPlaceholder}
+        />
+      </div>
+
       {/* GPS Location Map */}
       {children && (
         <div>
           <Label className={`${dir.textAlign} block mb-2`}>
-            {currentLanguage === 'ar' ? 'موقعك الحالي' :
-              currentLanguage === 'en' ? 'Your Current Location' :
-                'موقعیت فعلی شما'}
+            {currentLanguage === 'ar' ? 'موقعك الحالي' : 
+             currentLanguage === 'en' ? 'Your Current Location' : 
+             'موقعیت فعلی شما'}
           </Label>
           {children}
         </div>

@@ -9,7 +9,8 @@ export function middleware(request: NextRequest) {
   const protectedRoutes = ['/admin', '/dashboard', '/manage'];
   const isProtectedRoute = protectedRoutes.some(route => pathname.startsWith(route));
 
-  // All other routes are public (variable removed as it's not used)
+  // All other routes are public
+  const isPublicRoute = !isProtectedRoute;
 
   // If user is not authenticated and trying to access protected route
   if (!authToken && isProtectedRoute) {

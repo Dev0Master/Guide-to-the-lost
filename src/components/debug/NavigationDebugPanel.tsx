@@ -21,15 +21,15 @@ import {
 interface NavigationDebugPanelProps {
   sessionId?: string;
   profileId?: string;
-  sessionData?: Record<string, unknown>;
-  profileData?: Record<string, unknown>;
+  sessionData?: any;
+  profileData?: any;
   sessionConnected?: boolean;
   profileConnected?: boolean;
   sessionError?: string | null;
   profileError?: string | null;
   currentLocation?: { lat: number; lng: number } | null;
   locationError?: string;
-  navigationRoute?: Record<string, unknown>;
+  navigationRoute?: any;
   onRefreshConnections?: () => void;
 }
 
@@ -164,23 +164,21 @@ export function NavigationDebugPanel({
       </div>
 
       {/* Errors */}
-      {((sessionError && sessionError !== 'undefined' && sessionError.trim() !== '') || 
-        (profileError && profileError !== 'undefined' && profileError.trim() !== '') || 
-        (locationError && locationError.trim() !== '')) && (
+      {(sessionError || profileError || locationError) && (
         <div className="mb-3">
           <h4 className="text-sm font-medium text-red-900 mb-2">Active Errors:</h4>
           <div className="space-y-1">
-            {sessionError && sessionError !== 'undefined' && sessionError.trim() !== '' && (
+            {sessionError && (
               <div className="text-xs p-2 bg-red-100 text-red-800 rounded">
                 Session: {sessionError}
               </div>
             )}
-            {profileError && profileError !== 'undefined' && profileError.trim() !== '' && (
+            {profileError && (
               <div className="text-xs p-2 bg-red-100 text-red-800 rounded">
                 Profile: {profileError}
               </div>
             )}
-            {locationError && locationError.trim() !== '' && (
+            {locationError && (
               <div className="text-xs p-2 bg-red-100 text-red-800 rounded">
                 Location: {locationError}
               </div>

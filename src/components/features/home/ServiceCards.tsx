@@ -22,12 +22,12 @@ export function ServiceCards({ userRole }: ServiceCardsProps) {
   // Search card for searchers and staff
   if (userRole === 'searcher' || userRole === 'main_center_staff') {
     cards.push(
-      <Card key="search" className="text-center hover:scale-[1.02] transition-transform duration-200">
-        <h3 className="text-xl font-bold mb-3 text-foreground">{t.searchCard.title}</h3>
-        <p className="text-base text-gray-600 mb-6 leading-relaxed">
+      <Card key="search" className="p-6 text-center">
+        <h3 className="font-semibold mb-2">{t.searchCard.title}</h3>
+        <p className="text-sm text-gray-600 mb-4">
           {t.searchCard.description}
         </p>
-        <Button className="w-full" size="lg">{t.searchCard.action}</Button>
+        <Button className="w-full">{t.searchCard.action}</Button>
       </Card>
     );
   }
@@ -35,12 +35,12 @@ export function ServiceCards({ userRole }: ServiceCardsProps) {
   // Staff control panel
   if (userRole === 'main_center_staff') {
     cards.push(
-      <Card key="dashboard" className="text-center hover:scale-[1.02] transition-transform duration-200">
-        <h3 className="text-xl font-bold mb-3 text-foreground">{t.dashboardCard.title}</h3>
-        <p className="text-base text-gray-600 mb-6 leading-relaxed">
+      <Card key="dashboard" className="p-6 text-center">
+        <h3 className="font-semibold mb-2">{t.dashboardCard.title}</h3>
+        <p className="text-sm text-gray-600 mb-4">
           {t.dashboardCard.description}
         </p>
-        <Button className="w-full" variant="outline" size="lg">{t.dashboardCard.action}</Button>
+        <Button className="w-full" variant="outline">{t.dashboardCard.action}</Button>
       </Card>
     );
   }
@@ -51,7 +51,7 @@ export function ServiceCards({ userRole }: ServiceCardsProps) {
   }
 
   return (
-    <div className={`grid grid-cols-1 ${cards.length > 1 ? 'md:grid-cols-2' : ''} gap-6`}>
+    <div className={`grid grid-cols-1 ${cards.length > 1 ? 'md:grid-cols-2' : ''} gap-4`}>
       {cards}
     </div>
   );

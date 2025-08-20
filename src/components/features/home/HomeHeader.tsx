@@ -23,22 +23,22 @@ export function HomeHeader({ isAuthenticated, user, onLogout }: HomeHeaderProps)
 
   return (
     <header className="mb-8">
-      <Card className="flex flex-col sm:flex-row justify-between items-center gap-4">
-        <div className={`${dir.textAlign} flex-1`}>
-          <h1 className="text-3xl md:text-4xl font-bold text-gray-900 text-center mb-2">
+      <Card className="p-6 flex justify-between items-center">
+        <div className={dir.textAlign}>
+          <h1 className="text-2xl font-bold text-gray-900 text-center">
             {t.appTitle}
           </h1>
-          <p className="text-lg md:text-xl text-gray-600 text-center leading-relaxed">
+          <p className="text-gray-600">
             {isAuthenticated && user ? `${t.welcomeUser} ${user.displayName}` : t.appDescription}
           </p>
           {isAuthenticated && user && (
-            <p className="text-base text-center text-primary font-semibold mt-2 bg-primary/10 rounded-full px-4 py-1 inline-block">
+            <p className="text-sm text-center text-blue-600 font-medium">
               {user.role}
             </p>
           )}
         </div>
         {isAuthenticated && (user?.role === 'staff' || user?.role === 'main_center_staff') && (
-          <Button onClick={onLogout} variant="outline" size="lg" className="min-w-[120px]">
+          <Button onClick={onLogout} variant="outline">
             {t.logout}
           </Button>
         )}

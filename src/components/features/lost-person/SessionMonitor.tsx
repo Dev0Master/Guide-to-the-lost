@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { Card } from "@/components/ui/card";
-// import { Button } from "@/components/ui/button";
+import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useLanguageStore } from "@/store/language/languageStore";
 import { getDirectionalClasses } from "@/lib/rtl-utils";
@@ -13,10 +13,11 @@ import { AlertCircle, MapPin, User, Clock, Navigation } from "lucide-react";
 interface SessionMonitorProps {
   profileId: string | null;
   currentSessionId?: string | null;
-  onSessionUpdate?: (sessionData: Record<string, unknown>) => void;
+  onSessionUpdate?: (sessionData: any) => void;
 }
 
 export function SessionMonitor({ 
+  profileId, 
   currentSessionId,
   onSessionUpdate 
 }: SessionMonitorProps) {
@@ -24,7 +25,7 @@ export function SessionMonitor({
   const dir = getDirectionalClasses(currentLanguage);
   const notificationService = NotificationService.getInstance();
   
-  const { sessionData, isConnected, error } = useLiveSession(currentSessionId || null);
+  const { sessionData, isConnected, error } = useLiveSession(currentSessionId);
   const [lastNotificationTime, setLastNotificationTime] = useState<number>(0);
   const [hasShownTrackingStarted, setHasShownTrackingStarted] = useState(false);
 
@@ -34,7 +35,7 @@ export function SessionMonitor({
 
     // Notify parent component of session updates
     if (onSessionUpdate) {
-      onSessionUpdate(sessionData as Record<string, unknown>);
+      onSessionUpdate(sessionData);
     }
 
     const now = Date.now();
@@ -83,12 +84,12 @@ export function SessionMonitor({
     setHasShownTrackingStarted(false);
   }, [currentSessionId]);
 
-  const calculateDistance = (coord1: { lat: number; lng: number }, coord2: { lat: number; lng: number }): number | null => {
+  const calculateDistance = (coord1: any, coord2: any): number | null => {
     if (!coord1 || !coord2) return null;
-    if (coord1.lat == null || coord1.lng == null || coord2.lat == null || coord2.lng == null) return null;
+    if (coord1.latitude == null || coord1.longitude == null || coord2.latitude == null || coord2.longitude == null) return null;
     return notificationService.calculateDistance(
-      coord1.lat, coord1.lng,
-      coord2.lat, coord2.lng
+      coord1.latitude, coord1.longitude,
+      coord2.latitude, coord2.longitude
     );
   };
 
@@ -194,43 +195,13 @@ export function SessionMonitor({
                       <span>
                         {(() => {
                           try {
-                            console.log('[SessionMonitor] Raw geopoint data:', {
-                              searcherGeopoint: sessionData.session.searcher.geopoint,
-                              lostPersonGeopoint: sessionData.lostPerson.geopoint
-                            });
-
-                            // Handle Firebase GeoPoint structure - can be either {latitude, longitude} or {_latitude, _longitude}
-                            const searcherGeopoint = sessionData.session.searcher.geopoint as { latitude?: number; longitude?: number; _latitude?: number; _longitude?: number };
-                            const lostPersonGeopoint = sessionData.lostPerson.geopoint as { latitude?: number; longitude?: number; _latitude?: number; _longitude?: number };
-                            
-                            // Extract coordinates with fallback for both formats
-                            const searcherLat = searcherGeopoint._latitude || searcherGeopoint.latitude;
-                            const searcherLng = searcherGeopoint._longitude || searcherGeopoint.longitude;
-                            const lostPersonLat = lostPersonGeopoint._latitude || lostPersonGeopoint.latitude;
-                            const lostPersonLng = lostPersonGeopoint._longitude || lostPersonGeopoint.longitude;
-
-                            console.log('[SessionMonitor] Extracted coordinates:', {
-                              searcher: { lat: searcherLat, lng: searcherLng },
-                              lostPerson: { lat: lostPersonLat, lng: lostPersonLng }
-                            });
-
-                            // Validate all coordinates are numbers
-                            if (typeof searcherLat !== 'number' || typeof searcherLng !== 'number' || 
-                                typeof lostPersonLat !== 'number' || typeof lostPersonLng !== 'number') {
-                              console.warn('[SessionMonitor] Invalid coordinates detected');
-                              return 'N/A';
-                            }
-
                             const distance = calculateDistance(
-                              { lat: searcherLat, lng: searcherLng },
-                              { lat: lostPersonLat, lng: lostPersonLng }
+                              sessionData.session.searcher.geopoint,
+                              sessionData.lostPerson.geopoint
                             );
-
-                            console.log('[SessionMonitor] Calculated distance:', distance);
                             return distance ? formatDistance(distance) : 'N/A';
                           } catch (error) {
-                            console.error('[SessionMonitor] Error calculating distance:', error);
-                            console.error('[SessionMonitor] Error details:', error);
+                            console.error('Error calculating distance:', error);
                             return 'N/A';
                           }
                         })()}

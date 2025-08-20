@@ -1,12 +1,10 @@
-import React, { useRef, useEffect, useState, useCallback } from "react";
+import React, { useRef, useEffect, useState } from "react";
 import mapboxgl from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
 import { useLanguageStore } from "@/store/language/languageStore";
 
 interface SearcherMapProps {
   initialCoordinates?: { lat: number; lng: number };
-  initialCenter?: { lat: number; lng: number };
-  initialZoom?: number;
   onLocationSelect?: (coords: { lat: number; lng: number }) => void;
   isSelectable?: boolean;
   showPin?: boolean;
@@ -33,8 +31,6 @@ const SAMARRA_BOUNDS: [[number, number], [number, number]] = [
 
 export default function SearcherMap({ 
   initialCoordinates,
-  initialCenter,
-  initialZoom,
   onLocationSelect,
   isSelectable = true,
   showPin = false,
@@ -46,7 +42,7 @@ export default function SearcherMap({
   const mapRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<mapboxgl.Map | null>(null);
   const markersRef = useRef<mapboxgl.Marker[]>([]);
-  const [expanded] = useState(showFullScreen);
+  const [expanded, setExpanded] = useState(showFullScreen);
 
   useEffect(() => {
     if (!mapRef.current) return;
@@ -56,8 +52,8 @@ export default function SearcherMap({
     const map = new mapboxgl.Map({
       container: mapRef.current,
       style: "mapbox://styles/mapbox/satellite-v9",
-      center: initialCenter ? [initialCenter.lng, initialCenter.lat] : (initialCoordinates ? [initialCoordinates.lng, initialCoordinates.lat] : CENTER),
-      zoom: initialZoom || (initialCoordinates ? 16 : 15),
+      center: initialCoordinates ? [initialCoordinates.lng, initialCoordinates.lat] : CENTER,
+      zoom: initialCoordinates ? 16 : 15,
       bounds: SAMARRA_BOUNDS,
       fitBoundsOptions: { padding: 20 },
       interactive: isSelectable,
@@ -98,7 +94,7 @@ export default function SearcherMap({
         mapInstanceRef.current.remove();
       }
     };
-  }, [initialCoordinates, initialCenter, initialZoom, onLocationSelect, isSelectable, showPin, personName, showFullScreen, allLostPeople]);
+  }, [initialCoordinates, isSelectable, showPin, personName, showFullScreen, allLostPeople]);
 
   // قَصّ الإحداثيات للحدود المسموحة
   const clampLocationToBounds = (lng: number, lat: number) => {
@@ -166,7 +162,7 @@ export default function SearcherMap({
   };
 
   // عرض العلامات على الخريطة
-  const displayMarkers = useCallback((map: mapboxgl.Map) => {
+  const displayMarkers = (map: mapboxgl.Map) => {
     clearAllMarkers();
 
     // عرض شخص واحد محدد
@@ -238,7 +234,7 @@ export default function SearcherMap({
         }
       }
     }
-  }, [showPin, initialCoordinates, personName, allLostPeople]);
+  };
 
   // تحديد لون العلامة حسب لون الملابس
   const getColorByClothing = (clothingColor?: string): string => {

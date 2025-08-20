@@ -70,7 +70,7 @@ export const useLocationTracking = (
         console.error('Initial geolocation error:', error);
         setTrackingError('Unable to get current location');
       },
-      { enableHighAccuracy: true, timeout: 45000, maximumAge: 30000 }
+      { enableHighAccuracy: true, timeout: 10000, maximumAge: 60000 }
     );
 
     // Set up continuous tracking
@@ -103,9 +103,9 @@ export const useLocationTracking = (
         setTrackingError(errorMsg);
       },
       { 
-        enableHighAccuracy: true, // Force GPS for accuracy
-        timeout: 45000, // 45 seconds timeout for GPS
-        maximumAge: 30000 // 30 seconds cache for real-time tracking
+        enableHighAccuracy: true, 
+        timeout: 10000, 
+        maximumAge: 60000 
       }
     );
 
@@ -118,7 +118,7 @@ export const useLocationTracking = (
         (error) => {
           console.error('Interval geolocation error:', error);
         },
-        { enableHighAccuracy: true, timeout: 45000, maximumAge: 30000 }
+        { enableHighAccuracy: true, timeout: 10000, maximumAge: 60000 }
       );
     }, intervalMs);
 

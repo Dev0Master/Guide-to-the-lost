@@ -35,7 +35,7 @@ export function FormActions({ isValid, isLoading = false }: FormActionsProps) {
   );
 }
 
-export default function LostPersonForm() {
+export default function LostPersonForm(props) {
   // ...existing code...
   // Note: Location is now handled as text input in PersonalInfoForm component
 

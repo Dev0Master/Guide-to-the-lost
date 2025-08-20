@@ -48,41 +48,7 @@ export function getDirection(language: Language): 'ltr' | 'rtl' {
 }
 
 /**
- * Enhanced RTL support for better Arabic experience
- */
-export function getBorderRadius(language: Language, radius: 'sm' | 'md' | 'lg' | 'xl'): string {
-  const baseRadius = {
-    sm: 'rounded-sm',
-    md: 'rounded-md', 
-    lg: 'rounded-lg',
-    xl: 'rounded-xl'
-  };
-  return baseRadius[radius];
-}
-
-export function getPlacement(language: Language, position: 'start' | 'end'): 'left' | 'right' {
-  if (isRTL(language)) {
-    return position === 'start' ? 'right' : 'left';
-  }
-  return position === 'start' ? 'left' : 'right';
-}
-
-export function getTransform(language: Language, transform: string): string {
-  if (isRTL(language) && transform.includes('translateX')) {
-    return transform.replace('translateX(', 'translateX(-').replace('translateX(-(-', 'translateX(');
-  }
-  return transform;
-}
-
-export function getFloatDirection(language: Language, direction: 'start' | 'end'): string {
-  if (isRTL(language)) {
-    return direction === 'start' ? 'float-right' : 'float-left';
-  }
-  return direction === 'start' ? 'float-left' : 'float-right';
-}
-
-/**
- * Enhanced comprehensive class generator for directional styling with accessibility
+ * Comprehensive class generator for directional styling
  */
 export function getDirectionalClasses(language: Language) {
   return {
@@ -96,48 +62,5 @@ export function getDirectionalClasses(language: Language) {
     marginEnd: (size: string) => getMarginEnd(language, size),
     paddingStart: (size: string) => getPaddingStart(language, size),
     paddingEnd: (size: string) => getPaddingEnd(language, size),
-    placement: (position: 'start' | 'end') => getPlacement(language, position),
-    float: (direction: 'start' | 'end') => getFloatDirection(language, direction),
-    transform: (transform: string) => getTransform(language, transform),
-  };
-}
-
-/**
- * CSS Custom properties for RTL support
- */
-export function getRTLCustomProperties(language: Language) {
-  const isRtl = isRTL(language);
-  return {
-    '--text-align': isRtl ? 'right' : 'left',
-    '--flex-direction': isRtl ? 'row-reverse' : 'row',
-    '--margin-start': isRtl ? '0 var(--margin-value) 0 0' : '0 0 0 var(--margin-value)',
-    '--margin-end': isRtl ? '0 0 0 var(--margin-value)' : '0 var(--margin-value) 0 0',
-    '--border-start': isRtl ? 'border-right' : 'border-left',
-    '--border-end': isRtl ? 'border-left' : 'border-right',
-  } as React.CSSProperties;
-}
-
-/**
- * Accessibility-focused RTL classes for screen readers and navigation
- */
-export function getA11yDirectionalClasses(language: Language) {
-  const rtl = isRTL(language);
-  return {
-    // Screen reader support
-    dir: getDirection(language),
-    lang: language,
-    
-    // Navigation focus order
-    tabIndex: rtl ? -1 : undefined, // Let browser handle RTL tab order
-    
-    // ARIA attributes for RTL
-    'aria-orientation': 'horizontal',
-    
-    // CSS classes for enhanced RTL support
-    className: [
-      rtl ? 'rtl' : 'ltr',
-      rtl ? 'text-right' : 'text-left',
-      rtl ? 'flex-row-reverse' : 'flex-row'
-    ].join(' ')
   };
 }

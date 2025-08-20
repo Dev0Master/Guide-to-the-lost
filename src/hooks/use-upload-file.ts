@@ -110,7 +110,7 @@ export const useUploadFile = (
       addUploadedFile(uploadedFile, fileObj.hash);
       
       return uploadedFile;
-    } catch (error: unknown) {
+    } catch (error: any) {
       console.error(`Failed to upload ${fileObj.name}:`, error);
       updateFileStatus(fileObj.hash, 'Upload failed', 0);
       throw error;

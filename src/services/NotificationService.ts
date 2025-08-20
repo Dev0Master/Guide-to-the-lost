@@ -50,10 +50,12 @@ class NotificationService {
       icon: '/favicon.ico',
       badge: '/favicon.ico',
       requireInteraction: true,
+      timestamp: Date.now(),
       ...options
     };
 
-    // Filter out actions as they're not supported in regular notifications
+    // Remove actions as they're not supported in regular notifications
+    delete safeOptions.actions;
 
     try {
       const notification = new Notification(title, safeOptions);

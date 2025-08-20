@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useState, useCallback } from "react";
+import React, { useRef, useEffect, useState } from "react";
 import mapboxgl from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
 import { useLanguageStore } from "@/store/language/languageStore";
@@ -6,8 +6,6 @@ import { useLanguageStore } from "@/store/language/languageStore";
 interface LostPersonMapProps {
   onLocationDetected: (coords: { lat: number; lng: number }) => void;
   onLocationError?: (error: string) => void;
-  showControls?: boolean;
-  centerOnUser?: boolean;
 }
 
 mapboxgl.accessToken = process.env.NEXT_PUBLIC_MAPBOX_TOKEN!;
@@ -69,7 +67,7 @@ export default function LostPersonMap({ onLocationDetected, onLocationError }: L
   };
 
   // تحديد موقع المستخدم تلقائياً
-  const detectUserLocation = useCallback(() => {
+  const detectUserLocation = () => {
     if (!navigator.geolocation) {
       const error = currentLanguage === 'ar' 
         ? "متصفحك لا يدعم تحديد الموقع" 
@@ -152,7 +150,7 @@ export default function LostPersonMap({ onLocationDetected, onLocationError }: L
         maximumAge: 0
       }
     );
-  }, [currentLanguage, onLocationError, onLocationDetected]);
+  };
 
   // إعادة محاولة تحديد الموقع
   const retryLocationDetection = () => {

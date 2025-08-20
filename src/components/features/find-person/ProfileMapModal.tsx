@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { useLanguageStore } from "@/store/language/languageStore";
 import { getDirectionalClasses } from "@/lib/rtl-utils";
+import SearcherMap from "@/components/common/SearcherMap";
 
 interface Profile {
   id: string;
@@ -39,11 +40,21 @@ export function ProfileMapModal({
   const { currentLanguage } = useLanguageStore();
   const dir = getDirectionalClasses(currentLanguage);
 
-  // Get location coordinates if available
-  const coordinates = profile.geopoint ? {
-    lat: profile.geopoint.latitude || profile.geopoint._latitude || 0,
-    lng: profile.geopoint.longitude || profile.geopoint._longitude || 0
-  } : null;
+  // Convert profile data to format expected by SearcherMap
+  const mapData = profile.geopoint ? [{
+    id: profile.id,
+    displayName: profile.displayName,
+    coordinates: {
+      lat: profile.geopoint.latitude || profile.geopoint._latitude || 0,
+      lng: profile.geopoint.longitude || profile.geopoint._longitude || 0
+    },
+    age: profile.age,
+    clothingColor: profile.topColor,
+    distinctiveFeature: profile.distinctive,
+    phone: profile.phone,
+    consent: true,
+    timestamp: new Date().toISOString()
+  }] : [];
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -160,57 +171,28 @@ export function ProfileMapModal({
             </div>
           </Card>
 
-          {/* Location Information */}
+          {/* Map */}
           <div className="lg:col-span-2">
-            {coordinates ? (
-              <Card className="p-6 h-full flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100">
-                <div className={`text-center space-y-4 ${dir.textAlign}`}>
-                  <div className="text-4xl">📍</div>
-                  <h3 className="text-xl font-semibold text-gray-800">
-                    {currentLanguage === 'ar' ? 'معلومات الموقع' : 'Location Information'}
-                  </h3>
-                  <div className="bg-white p-4 rounded-lg shadow-sm border">
-                    <p className="text-sm text-gray-600 mb-2">
-                      {currentLanguage === 'ar' ? 'الإحداثيات:' : 'Coordinates:'}
-                    </p>
-                    <p className="font-mono text-lg text-blue-600">
-                      {coordinates.lat.toFixed(6)}, {coordinates.lng.toFixed(6)}
-                    </p>
-                  </div>
-                  {profile.lastSeen && (
-                    <div className="bg-white p-4 rounded-lg shadow-sm border">
-                      <p className="text-sm text-gray-600 mb-2">
-                        {currentLanguage === 'ar' ? 'آخر مكان شوهد فيه:' : 'Last seen location:'}
-                      </p>
-                      <p className="text-gray-800">{profile.lastSeen}</p>
-                    </div>
-                  )}
-                  <p className="text-xs text-gray-500">
-                    {currentLanguage === 'ar' 
-                      ? 'يمكن للفرق المتخصصة استخدام هذه المعلومات للبحث'
-                      : 'Specialized teams can use this information for search operations'
-                    }
-                  </p>
-                </div>
-              </Card>
+            {profile.geopoint ? (
+              <SearcherMap
+                isSelectable={false}
+                showFullScreen={false}
+                allLostPeople={mapData}
+                initialCenter={{
+                  lat: profile.geopoint.latitude || profile.geopoint._latitude || 0,
+                  lng: profile.geopoint.longitude || profile.geopoint._longitude || 0
+                }}
+                initialZoom={15}
+              />
             ) : (
-              <Card className="p-6 h-full flex items-center justify-center bg-gray-50">
-                <div className={`text-center space-y-4 ${dir.textAlign}`}>
-                  <div className="text-4xl">❓</div>
-                  <h3 className="text-xl font-semibold text-gray-600">
-                    {currentLanguage === 'ar'
-                      ? 'لا توجد معلومات موقع متاحة'
-                      : 'No location information available'
-                    }
-                  </h3>
-                  <p className="text-sm text-gray-500">
-                    {currentLanguage === 'ar'
-                      ? 'لم يتم تسجيل موقع لهذا الشخص بعد'
-                      : 'No location has been recorded for this person yet'
-                    }
-                  </p>
-                </div>
-              </Card>
+              <div className="h-full bg-gray-100 rounded-lg flex items-center justify-center">
+                <p className={`text-gray-500 ${dir.textAlign}`}>
+                  {currentLanguage === 'ar'
+                    ? 'لا توجد معلومات موقع متاحة'
+                    : 'No location information available'
+                  }
+                </p>
+              </div>
             )}
           </div>
         </div>
