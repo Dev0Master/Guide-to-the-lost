@@ -7,6 +7,7 @@ import { Card } from "@/components/ui/card";
 import { useLanguageStore } from "@/store/language/languageStore";
 import { getDirectionalClasses } from "@/lib/rtl-utils";
 import { ProfileMapModal } from "./ProfileMapModal";
+import { AlertDialog, useAlertDialog } from "@/components/ui/alert-dialog";
 
 interface SearchResult {
   id: string;
@@ -30,17 +31,20 @@ interface SearchResultsModalProps {
   onClose: () => void;
   results: SearchResult[];
   onStartTracking: (profileId: string, profileName?: string) => void;
+  isStartingSession?: boolean;
 }
 
 export function SearchResultsModal({ 
   isOpen, 
   onClose, 
   results,
-  onStartTracking 
+  onStartTracking,
+  isStartingSession = false
 }: SearchResultsModalProps) {
   const { currentLanguage } = useLanguageStore();
   const dir = getDirectionalClasses(currentLanguage);
   const [selectedProfile, setSelectedProfile] = useState<SearchResult | null>(null);
+  const { alertProps, showAlert } = useAlertDialog();
 
   return (
     <>
@@ -129,30 +133,45 @@ export function SearchResultsModal({
                         )}
                       </div>
 
-                      <div className="flex flex-col gap-2">
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => setSelectedProfile(result)}
-                        >
-                          {currentLanguage === 'ar' ? 'عرض على الخريطة' : 'View on Map'}
-                        </Button>
+                      <div className="flex flex-col">
                         
                         <Button
                           size="sm"
                           onClick={() => {
-                            if (confirm(
-                              currentLanguage === 'ar' 
+                            const profileId = result.id;
+                            const profileName = result.displayName;
+                            
+                            showAlert({
+                              type: 'warning',
+                              title: currentLanguage === 'ar' ? 'تأكيد بدء التتبع' : 'Confirm Tracking',
+                              description: currentLanguage === 'ar' 
                                 ? 'هل أنت متأكد من بدء تتبع هذا الشخص؟ سيتم إشعارهم بأنك تحاول الوصول إليهم.'
-                                : 'Are you sure you want to start tracking this person? They will be notified that you are trying to reach them.'
-                            )) {
-                              onStartTracking(result.id, result.displayName);
-                              onClose();
-                            }
+                                : 'Are you sure you want to start tracking this person? They will be notified that you are trying to reach them.',
+                              confirmText: currentLanguage === 'ar' ? 'بدء التتبع' : 'Start Tracking',
+                              cancelText: currentLanguage === 'ar' ? 'إلغاء' : 'Cancel',
+                              showCancel: true,
+                              onConfirm: async () => {                                
+                                // Call onStartTracking and wait for completion
+                                await onStartTracking(profileId, profileName);
+                                
+                                // Close the modal after successful tracking start
+                                onClose();
+                              }
+                            });
                           }}
-                          className="bg-green-600 hover:bg-green-700"
+                          disabled={isStartingSession}
+                          className="bg-green-600 hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed"
                         >
-                          {currentLanguage === 'ar' ? '🔍 بدء التتبع' : '🔍 Start Tracking'}
+                          {isStartingSession ? (
+                            <>
+                              <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent mr-2"></div>
+                              {currentLanguage === 'ar' ? 'جاري بدء التتبع...' : 'Starting tracking...'}
+                            </>
+                          ) : (
+                            <>
+                              {currentLanguage === 'ar' ? '🔍 بدء التتبع' : '🔍 Start Tracking'}
+                            </>
+                          )}
                         </Button>
                       </div>
                     </div>
@@ -183,6 +202,9 @@ export function SearchResultsModal({
           }}
         />
       )}
+
+      {/* Confirmation Alert Dialog */}
+      <AlertDialog {...alertProps} />
     </>
   );
 }

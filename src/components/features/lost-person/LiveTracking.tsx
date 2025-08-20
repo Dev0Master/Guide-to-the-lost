@@ -1,11 +1,13 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useLiveProfile } from "@/hooks/useLiveProfile";
 import { useLocationTracking } from "@/hooks/useLocationTracking";
 import { useLanguageStore } from "@/store/language/languageStore";
 import { RealTimeNavigationMap } from "@/components/features/navigation/RealTimeNavigationMap";
+import { LostPersonNavigationInterface } from "@/components/features/navigation/LostPersonNavigationInterface";
 import { Navigation } from "lucide-react";
+import { lostPersonTranslations, navigationTranslations, getFeatureTranslations } from "@/localization";
 
 interface LiveTrackingProps {
   profileId: string;
@@ -15,6 +17,8 @@ interface LiveTrackingProps {
 
 export function LiveTracking({ profileId, currentSessionId, onClose }: LiveTrackingProps) {
   const { currentLanguage } = useLanguageStore();
+  const t = getFeatureTranslations(lostPersonTranslations, currentLanguage);
+  const navT = getFeatureTranslations(navigationTranslations, currentLanguage);
   const [locationTrackingEnabled, setLocationTrackingEnabled] = useState(true);
   const [showNavigation, setShowNavigation] = useState(false);
 
@@ -48,12 +52,20 @@ export function LiveTracking({ profileId, currentSessionId, onClose }: LiveTrack
     setShowNavigation(!showNavigation);
   };
 
+  // Auto-show navigation interface when an active session is detected
+  useEffect(() => {
+    if (currentSessionId && !showNavigation) {
+      // Automatically show navigation interface when session becomes active
+      setShowNavigation(true);
+    }
+  }, [currentSessionId, showNavigation]);
+
   if (showNavigation && currentSessionId) {
     return (
-      <RealTimeNavigationMap
+      <LostPersonNavigationInterface
         sessionId={currentSessionId}
-        userType="lost"
         profileId={profileId}
+        searcherName={undefined} // Could be extracted from session data if needed
         onClose={() => setShowNavigation(false)}
       />
     );
@@ -64,7 +76,7 @@ export function LiveTracking({ profileId, currentSessionId, onClose }: LiveTrack
       <div className="space-y-4">
         <div className="flex justify-between items-center">
           <h3 className="text-lg font-semibold text-green-800">
-            {currentLanguage === 'ar' ? 'التتبع المباشر' : 'Live Tracking'}
+            {navT.liveTracking.title}
           </h3>
           <div className="flex gap-2">
             {currentSessionId && (
@@ -75,7 +87,7 @@ export function LiveTracking({ profileId, currentSessionId, onClose }: LiveTrack
                 className="text-blue-600 border-blue-600 hover:bg-blue-50"
               >
                 <Navigation className="w-4 h-4 mr-1" />
-                {currentLanguage === 'ar' ? 'التوجيه المباشر' : 'Live Navigation'}
+                {navT.liveTracking.liveNavigation}
               </Button>
             )}
             <Button 
@@ -84,7 +96,7 @@ export function LiveTracking({ profileId, currentSessionId, onClose }: LiveTrack
               onClick={handleDisconnect}
               className="text-red-600 border-red-600 hover:bg-red-50"
             >
-              {currentLanguage === 'ar' ? 'إيقاف التتبع' : 'Stop Tracking'}
+              {navT.liveTracking.stopTracking}
             </Button>
           </div>
         </div>
@@ -93,7 +105,7 @@ export function LiveTracking({ profileId, currentSessionId, onClose }: LiveTrack
           {/* SSE Connection Status */}
           <div className="space-y-2">
             <h4 className="font-medium text-green-700">
-              {currentLanguage === 'ar' ? 'حالة الاتصال المباشر' : 'Live Connection Status'}
+              {navT.liveTracking.connectionStatus}
             </h4>
             <div className="flex items-center space-x-2">
               <div 
@@ -103,8 +115,8 @@ export function LiveTracking({ profileId, currentSessionId, onClose }: LiveTrack
               />
               <span className="text-sm">
                 {isConnected 
-                  ? (currentLanguage === 'ar' ? 'متصل' : 'Connected')
-                  : (currentLanguage === 'ar' ? 'غير متصل' : 'Disconnected')
+                  ? navT.status.connected
+                  : navT.status.disconnected
                 }
               </span>
             </div>
@@ -116,7 +128,7 @@ export function LiveTracking({ profileId, currentSessionId, onClose }: LiveTrack
           {/* Location Tracking Status */}
           <div className="space-y-2">
             <h4 className="font-medium text-green-700">
-              {currentLanguage === 'ar' ? 'تتبع الموقع' : 'Location Tracking'}
+              {navT.liveTracking.locationTracking}
             </h4>
             <div className="flex items-center space-x-2">
               <div 
@@ -126,8 +138,8 @@ export function LiveTracking({ profileId, currentSessionId, onClose }: LiveTrack
               />
               <span className="text-sm">
                 {isTracking 
-                  ? (currentLanguage === 'ar' ? 'نشط' : 'Active')
-                  : (currentLanguage === 'ar' ? 'متوقف' : 'Stopped')
+                  ? navT.liveTracking.trackingActive
+                  : navT.liveTracking.trackingInactive
                 }
               </span>
               <Button
@@ -137,8 +149,8 @@ export function LiveTracking({ profileId, currentSessionId, onClose }: LiveTrack
                 className="ml-2"
               >
                 {isTracking 
-                  ? (currentLanguage === 'ar' ? 'إيقاف' : 'Stop')
-                  : (currentLanguage === 'ar' ? 'تشغيل' : 'Start')
+                  ? navT.actions.stop
+                  : navT.actions.start
                 }
               </Button>
             </div>
@@ -147,7 +159,7 @@ export function LiveTracking({ profileId, currentSessionId, onClose }: LiveTrack
             )}
             {lastUpdate && (
               <p className="text-gray-600 text-sm">
-                {currentLanguage === 'ar' ? 'آخر تحديث: ' : 'Last update: '}
+                {navT.liveTracking.lastUpdate} 
                 {lastUpdate.toLocaleTimeString()}
               </p>
             )}
@@ -158,19 +170,19 @@ export function LiveTracking({ profileId, currentSessionId, onClose }: LiveTrack
         {profileData && (
           <div className="mt-4 p-4 bg-white rounded-lg border">
             <h4 className="font-medium text-gray-700 mb-2">
-              {currentLanguage === 'ar' ? 'بيانات الملف الشخصي المباشرة' : 'Live Profile Data'}
+              {navT.liveTracking.profileData}
             </h4>
             <div className="text-sm space-y-1">
-              <p><strong>{currentLanguage === 'ar' ? 'الاسم:' : 'Name:'}</strong> {profileData.displayName || 'N/A'}</p>
-              <p><strong>{currentLanguage === 'ar' ? 'الحالة:' : 'Status:'}</strong> {profileData.status || 'Unknown'}</p>
+              <p><strong>{navT.liveTracking.profileFields.name}</strong> {profileData.displayName || 'N/A'}</p>
+              <p><strong>Status:</strong> {profileData.status || 'Unknown'}</p>
               
               {/* Safe geopoint display with debugging */}
               {profileData.geopoint && (
                 <p>
-                  <strong>{currentLanguage === 'ar' ? 'الموقع:' : 'Location:'}</strong> 
+                  <strong>Location:</strong> 
                   {typeof profileData.geopoint.latitude === 'number' && typeof profileData.geopoint.longitude === 'number'
                     ? ` ${profileData.geopoint.latitude.toFixed(5)}, ${profileData.geopoint.longitude.toFixed(5)}`
-                    : (currentLanguage === 'ar' ? ' الموقع غير متاح' : ' Location unavailable')
+                    : ` ${navT.errors.locationUnavailable}`
                   }
                 </p>
               )}
@@ -184,7 +196,7 @@ export function LiveTracking({ profileId, currentSessionId, onClose }: LiveTrack
               
               {profileData.updatedAt && (
                 <p>
-                  <strong>{currentLanguage === 'ar' ? 'آخر تحديث:' : 'Updated:'}</strong> 
+                  <strong>{navT.liveTracking.lastUpdate}</strong> 
                   {new Date(profileData.updatedAt).toLocaleString()}
                 </p>
               )}
@@ -194,16 +206,10 @@ export function LiveTracking({ profileId, currentSessionId, onClose }: LiveTrack
 
         <div className="text-xs text-gray-600 mt-4">
           <p>
-            {currentLanguage === 'ar' 
-              ? `معرف الملف الشخصي: ${profileId}`
-              : `Profile ID: ${profileId}`
-            }
+            {navT.liveTracking.profileId} {profileId}
           </p>
           <p>
-            {currentLanguage === 'ar'
-              ? 'سيتم تحديث موقعك تلقائياً كل 30 ثانية'
-              : 'Your location will be updated automatically every 30 seconds'
-            }
+            {navT.liveTracking.updateFrequency}
           </p>
         </div>
       </div>

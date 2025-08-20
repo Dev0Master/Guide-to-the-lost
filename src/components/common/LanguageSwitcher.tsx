@@ -61,15 +61,15 @@ export function LanguageSwitcher() {
     <Button
       ref={buttonRef}
       variant="outline"
-      className="min-w-20 h-12 px-4 rounded-full bg-white/95 backdrop-blur-sm shadow-lg hover:shadow-xl transition-all duration-300 border-2 border-gray-200/60 hover:border-blue-300/80 hover:bg-blue-50/30 group"
+      className="min-w-16 h-10 px-3 rounded-lg bg-background border border-border hover:border-primary/50 hover:bg-accent/30 group theme-transition shadow-sm hover:shadow-md transition-all duration-200"
       onMouseEnter={handleButtonHover}
       onMouseLeave={handleButtonLeave}
     >
-      <span className="text-sm font-medium text-gray-700 group-hover:text-blue-700 transition-colors duration-200 truncate">
+      <span className="text-xs font-medium text-foreground group-hover:text-primary transition-colors duration-200 truncate">
         {currentLang?.name}
       </span>
       <svg
-        className={`w-3.5 h-3.5 ${dir.marginStart('2')} text-gray-400 group-hover:text-blue-500 transition-all duration-200 group-hover:rotate-180`}
+        className={`w-3 h-3 ${dir.marginStart('1.5')} text-muted-foreground group-hover:text-primary transition-all duration-200 group-hover:rotate-180`}
         fill="none"
         stroke="currentColor"
         viewBox="0 0 24 24"
@@ -80,12 +80,13 @@ export function LanguageSwitcher() {
   );
 
   return (
-    <div className="fixed top-4 left-4 z-50">
+    <div className="relative">
       <Dropdown
         trigger={trigger}
         isOpen={isDropdownOpen}
         onOpenChange={setIsDropdownOpen}
         align="start"
+        className="min-w-max"
       >
         {languages.map((lang) => (
           <DropdownItem
@@ -93,19 +94,19 @@ export function LanguageSwitcher() {
             onClick={() => handleLanguageSelect(lang.code)}
             className={`
               ${currentLanguage === lang.code 
-                ? 'bg-blue-50 text-blue-700 font-medium' 
-                : 'text-gray-700 hover:text-blue-600 hover:bg-blue-50/50'
+                ? 'bg-primary/10 text-primary font-medium' 
+                : 'text-popover-foreground hover:text-primary hover:bg-accent/50'
               }
-              transition-all duration-200
+              transition-all duration-200 theme-transition
             `}
           >
-            <div className="flex items-center gap-2">
-              <span className="text-sm font-medium truncate flex-1">
+            <div className="flex items-center justify-center gap-3 min-w-max">
+              <span className="text-sm font-medium whitespace-nowrap">
                 {lang.name}
               </span>
               {currentLanguage === lang.code && (
                 <svg
-                  className="w-3.5 h-3.5 text-blue-600 flex-shrink-0"
+                  className="w-3 h-3 text-primary flex-shrink-0"
                   fill="currentColor"
                   viewBox="0 0 20 20"
                 >

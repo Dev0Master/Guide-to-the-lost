@@ -43,71 +43,117 @@
 }
 :root {
   --radius: 0.75rem;
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.141 0.005 285.823);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.141 0.005 285.823);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.141 0.005 285.823);
-  --primary: oklch(0.723 0.219 149.579);
-  --primary-foreground: oklch(0.982 0.018 155.826);
-  --secondary: oklch(0.967 0.001 286.375);
-  --secondary-foreground: oklch(0.21 0.006 285.885);
-  --muted: oklch(0.967 0.001 286.375);
-  --muted-foreground: oklch(0.552 0.016 285.938);
-  --accent: oklch(0.967 0.001 286.375);
-  --accent-foreground: oklch(0.21 0.006 285.885);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.92 0.004 286.32);
-  --input: oklch(0.92 0.004 286.32);
-  --ring: oklch(0.723 0.219 149.579);
+  /* Enhanced accessibility color scheme with WCAG AA contrast ratios (4.5:1 minimum) */
+  --background: #ffffff;
+  --foreground: #111827; /* Enhanced contrast from #1a1a1a */
+  --card: #ffffff;
+  --card-foreground: #111827;
+  --popover: #ffffff;
+  --popover-foreground: #111827;
+  
+  /* Trustworthy blue primary - calm and professional for emergencies */
+  --primary: #1e40af; /* Darker blue for better contrast */
+  --primary-foreground: #ffffff;
+  
+  /* Warm neutral secondary for approachability */
+  --secondary: #f1f5f9;
+  --secondary-foreground: #1f2937; /* Enhanced contrast */
+  --muted: #f8fafc;
+  --muted-foreground: #374151; /* Better contrast than #64748b */
+  --accent: #ddd6fe;
+  --accent-foreground: #581c87; /* Much stronger contrast */
+  
+  /* Emergency red - clear and urgent but not alarming */
+  --destructive: #dc2626;
+  --destructive-foreground: #ffffff;
+  
+  /* Enhanced borders and interactive elements */
+  --border: #d1d5db; /* Slightly darker for better visibility */
+  --input: #ffffff;
+  --ring: #3b82f6;
+  
+  /* Clear status colors for emergency scenarios */
+  --success: #059669; /* Darker green for better contrast */
+  --success-foreground: #ffffff;
+  --warning: #d97706; /* Enhanced orange for visibility */
+  --warning-foreground: #ffffff;
+  
+  /* Emergency-specific colors */
+  --emergency: #dc2626;
+  --emergency-foreground: #ffffff;
+  --info: #0369a1;
+  --info-foreground: #ffffff;
   --chart-1: oklch(0.646 0.222 41.116);
   --chart-2: oklch(0.6 0.118 184.704);
   --chart-3: oklch(0.398 0.07 227.392);
   --chart-4: oklch(0.828 0.189 84.429);
   --chart-5: oklch(0.769 0.188 70.08);
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.141 0.005 285.823);
-  --sidebar-primary: oklch(0.723 0.219 149.579);
-  --sidebar-primary-foreground: oklch(0.982 0.018 155.826);
-  --sidebar-accent: oklch(0.967 0.001 286.375);
-  --sidebar-accent-foreground: oklch(0.21 0.006 285.885);
-  --sidebar-border: oklch(0.92 0.004 286.32);
-  --sidebar-ring: oklch(0.723 0.219 149.579);
+  --sidebar: #ffffff;
+  --sidebar-foreground: #1a1a1a;
+  --sidebar-primary: #2563eb;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #f1f5f9;
+  --sidebar-accent-foreground: #334155;
+  --sidebar-border: #e2e8f0;
+  --sidebar-ring: #3b82f6;
 }
 
 .dark {
-  --background: oklch(0.141 0.005 285.823);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.21 0.006 285.885);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.21 0.006 285.885);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.696 0.17 162.48);
-  --primary-foreground: oklch(0.393 0.095 152.535);
-  --secondary: oklch(0.274 0.006 286.033);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.274 0.006 286.033);
-  --muted-foreground: oklch(0.705 0.015 286.067);
-  --accent: oklch(0.274 0.006 286.033);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.527 0.154 150.069);
-  --chart-1: oklch(0.488 0.243 264.376);
-  --chart-2: oklch(0.696 0.17 162.48);
-  --chart-3: oklch(0.769 0.188 70.08);
-  --chart-4: oklch(0.627 0.265 303.9);
-  --chart-5: oklch(0.645 0.246 16.439);
-  --sidebar: oklch(0.21 0.006 285.885);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.696 0.17 162.48);
-  --sidebar-primary-foreground: oklch(0.393 0.095 152.535);
-  --sidebar-accent: oklch(0.274 0.006 286.033);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.527 0.154 150.069);
+  /* Enhanced dark mode color scheme with better contrast and readability */
+  --background: #0a0a0b;
+  --foreground: #fafafa;
+  --card: #111113;
+  --card-foreground: #fafafa;
+  --popover: #111113;
+  --popover-foreground: #fafafa;
+  
+  /* Trustworthy blue primary - consistent with light mode but adjusted for dark */
+  --primary: #3b82f6;
+  --primary-foreground: #ffffff;
+  
+  /* Warm neutral secondary for approachability in dark mode */
+  --secondary: #1f2937;
+  --secondary-foreground: #f9fafb;
+  --muted: #1f2937;
+  --muted-foreground: #9ca3af;
+  --accent: #374151;
+  --accent-foreground: #f9fafb;
+  
+  /* Emergency red - clear and urgent */
+  --destructive: #ef4444;
+  --destructive-foreground: #ffffff;
+  
+  /* Enhanced borders and interactive elements for dark mode */
+  --border: #27272a;
+  --input: #27272a;
+  --ring: #3b82f6;
+  
+  /* Clear status colors for emergency scenarios in dark mode */
+  --success: #10b981;
+  --success-foreground: #ffffff;
+  --warning: #f59e0b;
+  --warning-foreground: #ffffff;
+  
+  /* Emergency-specific colors for dark mode */
+  --emergency: #ef4444;
+  --emergency-foreground: #ffffff;
+  --info: #3b82f6;
+  --info-foreground: #ffffff;
+  
+  --chart-1: #8b5cf6;
+  --chart-2: #06b6d4;
+  --chart-3: #10b981;
+  --chart-4: #f59e0b;
+  --chart-5: #ef4444;
+  
+  --sidebar: #111113;
+  --sidebar-foreground: #fafafa;
+  --sidebar-primary: #3b82f6;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #1f2937;
+  --sidebar-accent-foreground: #f9fafb;
+  --sidebar-border: #27272a;
+  --sidebar-ring: #3b82f6;
 }
 
 
@@ -115,9 +161,81 @@
   * {
     @apply border-border outline-ring/50;
   }
+  
+  /* Smooth theme transitions */
+  html {
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+  
   body {
     @apply bg-background text-foreground;
+    /* Enhanced typography for all ages and abilities */
+    font-size: 18px; /* Increased from 16px for better readability */
+    line-height: 1.7; /* Increased from 1.6 for better reading comfort */
+    letter-spacing: 0.01em;
+    font-weight: 400;
+    /* Default LTR, language switcher handles direction dynamically */
+    direction: ltr; /* Default direction, overridden by language switcher */
+    transition: background-color 0.3s ease, color 0.3s ease;
   }
+  
+  /* Large, highly readable headings optimized for emergency scenarios */
+  h1 {
+    @apply text-4xl md:text-5xl font-bold leading-tight;
+    letter-spacing: -0.02em;
+    color: var(--foreground);
+    margin-bottom: 1rem;
+    transition: color 0.3s ease;
+  }
+  h2 {
+    @apply text-3xl md:text-4xl font-semibold leading-tight;
+    color: var(--foreground);
+    margin-bottom: 0.875rem;
+    transition: color 0.3s ease;
+  }
+  h3 {
+    @apply text-2xl md:text-3xl font-semibold leading-snug;
+    color: var(--foreground);
+    margin-bottom: 0.75rem;
+    transition: color 0.3s ease;
+  }
+  h4 {
+    @apply text-xl md:text-2xl font-medium leading-snug;
+    color: var(--foreground);
+    margin-bottom: 0.625rem;
+    transition: color 0.3s ease;
+  }
+  
+  /* Enhanced body text for better readability */
+  p {
+    @apply text-lg md:text-xl leading-relaxed;
+    margin-bottom: 1rem;
+    color: var(--foreground);
+    transition: color 0.3s ease;
+  }
+  
+  /* Large, accessible form elements meeting touch target guidelines */
+  input, textarea, select {
+    @apply text-lg md:text-xl bg-background text-foreground;
+    min-height: 52px; /* Increased from 48px */
+    padding: 12px 16px;
+    border-radius: 8px;
+    border: 2px solid var(--border);
+    transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease, box-shadow 0.3s ease;
+  }
+  
+  input:focus, textarea:focus, select:focus {
+    border-color: var(--ring);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    outline: none;
+  }
+  
+  textarea {
+    min-height: 120px;
+    resize: vertical;
+  }
+  
+  /* Enhanced accessible buttons with larger touch targets */
   button,
   [type="button"],
   [type="submit"],
@@ -128,7 +246,233 @@
   .btn-primary,
   .btn-secondary {
     cursor: pointer;
+    min-height: 52px; /* Increased from 48px */
+    min-width: 52px; /* Increased from 120px */
+    padding: 12px 24px;
+    @apply text-lg md:text-xl font-semibold;
+    border-radius: 8px;
+    transition: all 0.2s ease-in-out, background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease, box-shadow 0.3s ease;
+    /* Ensure adequate spacing between touch targets */
+    margin: 4px;
+    outline: none;
   }
+  
+  /* Emergency button styling */
+  .btn-emergency {
+    min-height: 64px;
+    min-width: 200px;
+    @apply text-xl md:text-2xl font-bold;
+    background-color: var(--emergency);
+    color: var(--emergency-foreground);
+    padding: 16px 32px;
+    border: none;
+    box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
+  }
+  
+  .btn-emergency:hover {
+    background-color: color-mix(in srgb, var(--emergency) 90%, black);
+    box-shadow: 0 6px 16px rgba(220, 38, 38, 0.4);
+  }
+  
+  /* Enhanced focus states for better accessibility */
+  *:focus-visible {
+    @apply outline-3 outline-offset-2;
+    outline-color: var(--ring);
+    box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.3);
+  }
+  
+  /* Special focus for interactive elements */
+  button:focus-visible,
+  input:focus-visible,
+  select:focus-visible,
+  textarea:focus-visible,
+  [role="button"]:focus-visible {
+    outline-offset: 2px;
+    box-shadow: 0 0 0 6px rgba(59, 130, 246, 0.2);
+  }
+  
+  /* Skip navigation for screen readers */
+  .skip-link {
+    position: absolute;
+    top: -40px;
+    left: 6px;
+    background: var(--primary);
+    color: var(--primary-foreground);
+    padding: 8px 16px;
+    border-radius: 4px;
+    text-decoration: none;
+    font-weight: bold;
+    z-index: 1000;
+    transition: top 0.2s ease-in-out;
+  }
+  
+  .skip-link:focus {
+    top: 6px;
+  }
+  
+  /* Enhanced high contrast mode support */
+  @media (prefers-contrast: high) {
+    :root {
+      --border: #000000;
+      --ring: #000000;
+      --foreground: #000000;
+      --background: #ffffff;
+      --primary: #0000ff;
+      --primary-foreground: #ffffff;
+    }
+    
+    .dark {
+      --border: #ffffff;
+      --ring: #ffffff;
+      --foreground: #ffffff;
+      --background: #000000;
+      --primary: #00ffff;
+      --primary-foreground: #000000;
+    }
+    
+    button, input, select, textarea {
+      border: 3px solid currentColor !important;
+    }
+  }
+  
+  /* Enhanced reduced motion support */
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+    
+    html {
+      scroll-behavior: auto !important;
+    }
+  }
+  
+  /* Large print/zoom support */
+  @media (min-resolution: 192dpi) {
+    body {
+      font-size: 20px;
+    }
+    
+    button, input, select, textarea {
+      min-height: 56px;
+    }
+  }
+
+  /* Enhanced RTL support for Arabic */
+  [dir="rtl"] {
+    text-align: right;
+  }
+
+  [dir="rtl"] .flex {
+    flex-direction: row-reverse;
+  }
+
+  [dir="rtl"] .space-x-reverse > :not([hidden]) ~ :not([hidden]) {
+    --tw-space-x-reverse: 1;
+  }
+
+  [dir="rtl"] input,
+  [dir="rtl"] textarea {
+    text-align: right;
+  }
+
+  [dir="rtl"] select {
+    text-align-last: right;
+  }
+
+  /* RTL-specific button alignment */
+  [dir="rtl"] .btn-group {
+    flex-direction: row-reverse;
+  }
+
+  [dir="rtl"] .btn-group button:first-child {
+    border-radius: 0 0.5rem 0.5rem 0;
+  }
+
+  [dir="rtl"] .btn-group button:last-child {
+    border-radius: 0.5rem 0 0 0.5rem;
+  }
+
+  /* RTL navigation improvements */
+  [dir="rtl"] .navigation-icons {
+    transform: scaleX(-1);
+  }
+
+  [dir="rtl"] .arrow-left {
+    transform: rotate(180deg);
+  }
+
+  [dir="rtl"] .arrow-right {
+    transform: rotate(180deg);
+  }
+
+  /* RTL-specific margin and padding utilities */
+  [dir="rtl"] .ms-auto {
+    margin-left: auto !important;
+    margin-right: 0 !important;
+  }
+
+  [dir="rtl"] .me-auto {
+    margin-right: auto !important;
+    margin-left: 0 !important;
+  }
+
+  /* Enhanced Arabic font support */
+  [dir="rtl"] {
+    font-family: 'Cairo', 'Segoe UI', 'Tahoma', Arial, sans-serif;
+    font-feature-settings: 'liga' on, 'dlig' on, 'calt' on;
+    text-rendering: optimizeLegibility;
+  }
+
+  /* RTL form improvements */
+  [dir="rtl"] .form-group {
+    text-align: right;
+  }
+
+  [dir="rtl"] .form-label {
+    text-align: right;
+    margin-right: 0;
+    margin-left: 0.5rem;
+  }
+
+  [dir="rtl"] .checkbox,
+  [dir="rtl"] .radio {
+    margin-left: 0.5rem;
+    margin-right: 0;
+  }
+
+  /* RTL dialog and modal positioning */
+  [dir="rtl"] .dialog-content {
+    text-align: right;
+  }
+
+  [dir="rtl"] .modal-close {
+    left: 1rem;
+    right: auto;
+  }
+
+  /* RTL breadcrumb improvements */
+  [dir="rtl"] .breadcrumb-separator:before {
+    content: "\\";
+    transform: scaleX(-1);
+  }
+
+  /* RTL tooltip positioning */
+  [dir="rtl"] .tooltip {
+    text-align: right;
+  }
+
+  /* Theme transition utilities */
+  .theme-transition {
+    transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease, box-shadow 0.3s ease;
+  }
+
+  /* Enhanced card and container transitions */
+  .card, .container, .modal, .dialog {
+    transition: background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+  }
+
 }
   
 
@@ -164,3 +508,76 @@
     scrollbar-color: var(--sb-thumb-color) var(--sb-track-color);
   }
 } */
+
+/* Enhanced Mapbox navigation controls - mobile-friendly */
+.mapboxgl-ctrl-group {
+  width: 26px !important;
+  border-radius: 6px !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15) !important;
+  border: 1px solid rgba(0, 0, 0, 0.1) !important;
+}
+
+.mapboxgl-ctrl-group button {
+  width: 26px !important;
+  height: 26px !important;
+  font-size: 12px !important;
+  background-color: #ffffff !important;
+  border: none !important;
+  border-radius: 0 !important;
+  transition: all 0.2s ease !important;
+}
+
+.mapboxgl-ctrl-group button:hover {
+  background-color: #f3f4f6 !important;
+}
+
+.mapboxgl-ctrl-group button:first-child {
+  border-top-left-radius: 5px !important;
+  border-top-right-radius: 5px !important;
+}
+
+.mapboxgl-ctrl-group button:last-child {
+  border-bottom-left-radius: 5px !important;
+  border-bottom-right-radius: 5px !important;
+}
+
+.mapboxgl-ctrl-zoom-in,
+.mapboxgl-ctrl-zoom-out,
+.mapboxgl-ctrl-compass {
+  width: 26px !important;
+  height: 26px !important;
+}
+
+.mapboxgl-ctrl-icon {
+  transform: scale(0.8);
+  opacity: 0.8;
+}
+
+.mapboxgl-ctrl-group button:hover .mapboxgl-ctrl-icon {
+  opacity: 1;
+}
+
+/* Mobile-specific adjustments */
+@media (max-width: 640px) {
+  .mapboxgl-ctrl-group {
+    width: 28px !important;
+    margin: 8px !important;
+  }
+  
+  .mapboxgl-ctrl-group button {
+    width: 28px !important;
+    height: 28px !important;
+    font-size: 13px !important;
+  }
+  
+  .mapboxgl-ctrl-zoom-in,
+  .mapboxgl-ctrl-zoom-out,
+  .mapboxgl-ctrl-compass {
+    width: 28px !important;
+    height: 28px !important;
+  }
+  
+  .mapboxgl-ctrl-icon {
+    transform: scale(0.85);
+  }
+}

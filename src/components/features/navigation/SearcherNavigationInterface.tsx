@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -8,6 +8,8 @@ import { useLanguageStore } from "@/store/language/languageStore";
 import { getDirectionalClasses } from "@/lib/rtl-utils";
 import { RealTimeNavigationMap } from "./RealTimeNavigationMap";
 import { Navigation, ArrowLeft, MapPin } from "lucide-react";
+import ErrorBoundary from "@/components/common/ErrorBoundary";
+import { navigationTranslations, errorTranslations, getFeatureTranslations } from "@/localization";
 
 interface SearcherNavigationInterfaceProps {
   sessionId: string;
@@ -25,15 +27,24 @@ export function SearcherNavigationInterface({
   const { currentLanguage } = useLanguageStore();
   const dir = getDirectionalClasses(currentLanguage);
   const [showFullNavigation, setShowFullNavigation] = useState(false);
+  
+  // Translation objects
+  const navT = getFeatureTranslations(navigationTranslations, currentLanguage);
+  const errorT = getFeatureTranslations(errorTranslations, currentLanguage);
 
   if (showFullNavigation) {
     return (
-      <RealTimeNavigationMap
-        sessionId={sessionId}
-        userType="searcher"
-        profileId={targetProfileId}
-        onClose={() => setShowFullNavigation(false)}
-      />
+      <ErrorBoundary
+        fallbackTitle={errorT.navigation.navigationError}
+        fallbackMessage={errorT.navigation.interfaceErrorMessage}
+      >
+        <RealTimeNavigationMap
+          sessionId={sessionId}
+          userType="searcher"
+          profileId={targetProfileId}
+          onClose={() => setShowFullNavigation(false)}
+        />
+      </ErrorBoundary>
     );
   }
 
@@ -48,23 +59,23 @@ export function SearcherNavigationInterface({
             </div>
             <div>
               <h2 className={`font-semibold text-blue-900 ${dir.textAlign}`}>
-                {currentLanguage === 'ar' ? 'جلسة البحث النشطة' : 'Active Search Session'}
+                {navT.searcher.title}
               </h2>
               <p className={`text-sm text-blue-700 ${dir.textAlign}`}>
                 {targetProfileName
-                  ? (currentLanguage === 'ar' ? `البحث عن: ${targetProfileName}` : `Searching for: ${targetProfileName}`)
-                  : (currentLanguage === 'ar' ? 'جلسة بحث نشطة' : 'Active search session')
+                  ? `${navT.searcher.searcherInfo}: ${targetProfileName}`
+                  : navT.searcher.searcherInfoDescription
                 }
               </p>
             </div>
           </div>
           <div className="flex items-center gap-2">
             <Badge variant="default" className="bg-green-600">
-              {currentLanguage === 'ar' ? 'نشط' : 'Active'}
+              {navT.searcher.active}
             </Badge>
             <Button variant="outline" size="sm" onClick={onClose}>
               <ArrowLeft className="w-4 h-4 mr-1" />
-              {currentLanguage === 'ar' ? 'رجوع' : 'Back'}
+              {navT.searcher.back}
             </Button>
           </div>
         </div>
@@ -78,20 +89,17 @@ export function SearcherNavigationInterface({
               <MapPin className="w-6 h-6 text-green-600" />
             </div>
             <h3 className={`font-semibold mb-2 ${dir.textAlign}`}>
-              {currentLanguage === 'ar' ? 'التوجيه المباشر' : 'Live Navigation'}
+              {navT.searcher.liveNavigation}
             </h3>
             <p className={`text-sm text-gray-600 mb-4 ${dir.textAlign}`}>
-              {currentLanguage === 'ar' 
-                ? 'اعرض الخريطة المباشرة مع مواقع كلا الطرفين والتوجيهات'
-                : 'View live map with both locations and turn-by-turn directions'
-              }
+              {navT.searcher.liveNavigationDescription}
             </p>
             <Button 
               onClick={() => setShowFullNavigation(true)}
               className="w-full bg-green-600 hover:bg-green-700"
             >
               <Navigation className="w-4 h-4 mr-2" />
-              {currentLanguage === 'ar' ? 'فتح التوجيه' : 'Open Navigation'}
+              {navT.searcher.openNavigation}
             </Button>
           </div>
         </Card>
@@ -104,19 +112,16 @@ export function SearcherNavigationInterface({
               </svg>
             </div>
             <h3 className={`font-semibold mb-2 ${dir.textAlign}`}>
-              {currentLanguage === 'ar' ? 'اتصال مباشر' : 'Direct Contact'}
+              {navT.searcher.directContact}
             </h3>
             <p className={`text-sm text-gray-600 mb-4 ${dir.textAlign}`}>
-              {currentLanguage === 'ar' 
-                ? 'تواصل مع الشخص المفقود مباشرة عبر الهاتف'
-                : 'Contact the lost person directly via phone'
-              }
+              {navT.searcher.contactDescription}
             </p>
             <Button 
               variant="outline" 
               className="w-full border-orange-600 text-orange-600 hover:bg-orange-50"
             >
-              {currentLanguage === 'ar' ? 'اتصال' : 'Call'}
+              {navT.searcher.call}
             </Button>
           </div>
         </Card>
@@ -125,18 +130,18 @@ export function SearcherNavigationInterface({
       {/* Session Information */}
       <Card className="p-4">
         <h3 className={`font-semibold mb-3 ${dir.textAlign}`}>
-          {currentLanguage === 'ar' ? 'معلومات الجلسة' : 'Session Information'}
+          {navT.searcher.sessionInfo}
         </h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
           <div>
             <span className="font-medium text-gray-600">
-              {currentLanguage === 'ar' ? 'معرف الجلسة:' : 'Session ID:'}
+              {navT.searcher.sessionId}
             </span>
             <p className="font-mono text-xs bg-gray-100 px-2 py-1 rounded mt-1">{sessionId}</p>
           </div>
           <div>
             <span className="font-medium text-gray-600">
-              {currentLanguage === 'ar' ? 'معرف الملف الشخصي:' : 'Profile ID:'}
+              {navT.searcher.profileId}
             </span>
             <p className="font-mono text-xs bg-gray-100 px-2 py-1 rounded mt-1">{targetProfileId}</p>
           </div>
@@ -146,45 +151,15 @@ export function SearcherNavigationInterface({
       {/* Instructions */}
       <Card className="p-4 bg-blue-50 border-blue-200">
         <h3 className={`font-semibold text-blue-900 mb-3 ${dir.textAlign}`}>
-          {currentLanguage === 'ar' ? 'تعليمات البحث' : 'Search Instructions'}
+          {navT.searcher.searchInstructions}
         </h3>
         <ul className={`text-sm text-blue-800 space-y-2 ${dir.textAlign}`}>
-          <li className="flex items-start gap-2">
-            <span className="text-blue-600">•</span>
-            <span>
-              {currentLanguage === 'ar'
-                ? 'استخدم التوجيه المباشر لرؤية موقعك وموقع الشخص المفقود في الوقت الفعلي'
-                : 'Use Live Navigation to see your location and the lost person\'s location in real-time'
-              }
-            </span>
-          </li>
-          <li className="flex items-start gap-2">
-            <span className="text-blue-600">•</span>
-            <span>
-              {currentLanguage === 'ar'
-                ? 'سيتم تحديث المواقع تلقائياً كل بضع ثوان'
-                : 'Locations will update automatically every few seconds'
-              }
-            </span>
-          </li>
-          <li className="flex items-start gap-2">
-            <span className="text-blue-600">•</span>
-            <span>
-              {currentLanguage === 'ar'
-                ? 'اتبع الاتجاهات الصوتية والمرئية للوصول للشخص المفقود'
-                : 'Follow the visual and audio directions to reach the lost person'
-              }
-            </span>
-          </li>
-          <li className="flex items-start gap-2">
-            <span className="text-blue-600">•</span>
-            <span>
-              {currentLanguage === 'ar'
-                ? 'تأكد من إبقاء هاتفك مشحون ومتصل بالإنترنت'
-                : 'Keep your phone charged and connected to the internet'
-              }
-            </span>
-          </li>
+          {navT.searcher.instructionsList.map((instruction, index) => (
+            <li key={index} className="flex items-start gap-2">
+              <span className="text-blue-600">•</span>
+              <span>{instruction}</span>
+            </li>
+          ))}
         </ul>
       </Card>
     </div>

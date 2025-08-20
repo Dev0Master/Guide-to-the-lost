@@ -42,19 +42,13 @@ export function ConsentSection({ consent, setConsent, trackingEnabled, setTracki
             className="mt-1"
           />
           <Label htmlFor="tracking" className={`${dir.textAlign} text-sm text-gray-700`}>
-            {currentLanguage === 'ar' 
-              ? 'أوافق على تفعيل خدمة التتبع للسماح للباحثين بالعثور علي والتواصل معي'
-              : 'I agree to enable tracking service to allow searchers to find me and communicate with me'
-            }
+            {t.trackingConsentText}
           </Label>
         </div>
         {trackingEnabled && (
           <div className="mt-3 p-3 bg-white rounded border-l-4 border-blue-400">
             <p className={`text-xs text-gray-600 ${dir.textAlign}`}>
-              {currentLanguage === 'ar'
-                ? 'عند تفعيل التتبع، سيتم حفظ معرف ملفك الشخصي ويمكن للباحثين إنشاء جلسة تتبع معك لمساعدتك في العثور على طريق العودة.'
-                : 'When tracking is enabled, your profile ID will be saved and searchers can create a tracking session with you to help you find your way back.'
-              }
+              {t.trackingEnabledInfo}
             </p>
           </div>
         )}

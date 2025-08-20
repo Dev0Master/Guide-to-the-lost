@@ -26,24 +26,24 @@ export function UserInfo({ user }: UserInfoProps) {
       
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-right">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label className="block text-sm font-medium text-muted-foreground mb-1">
             {t.name}
           </label>
-          <p className="text-gray-900">{user.displayName}</p>
+          <p className="text-foreground">{user.displayName}</p>
         </div>
         
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label className="block text-sm font-medium text-muted-foreground mb-1">
             {t.email}
           </label>
-          <p className="text-gray-900">{user.email}</p>
+          <p className="text-foreground">{user.email}</p>
         </div>
         
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label className="block text-sm font-medium text-muted-foreground mb-1">
             {t.role}
           </label>
-          <p className="text-gray-900">{user.role}</p>
+          <p className="text-foreground">{user.role}</p>
         </div>
       </div>
     </>

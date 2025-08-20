@@ -3,9 +3,11 @@
 import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { AlertDialog, useAlertDialog } from "@/components/ui/alert-dialog";
 import { useLanguageStore } from "@/store/language/languageStore";
 import { getDirectionalClasses } from "@/lib/rtl-utils";
 import { NavigationMap } from "./NavigationMap";
+import { lostPersonTranslations, getFeatureTranslations } from "@/localization";
 
 interface WaitingInterfaceProps {
   profileId: string;
@@ -15,12 +17,30 @@ interface WaitingInterfaceProps {
 
 export function WaitingInterface({ 
   profileId, 
-  onNavigationRequest, 
   onNewRegistration 
 }: WaitingInterfaceProps) {
   const { currentLanguage } = useLanguageStore();
   const dir = getDirectionalClasses(currentLanguage);
+  const t = getFeatureTranslations(lostPersonTranslations, currentLanguage);
   const [showNavigation, setShowNavigation] = useState(false);
+  const { alertProps, showAlert } = useAlertDialog();
+
+  const handleNewRegistration = () => {
+    showAlert({
+      type: 'warning',
+      title: t.newRegistrationTitle, // changed from t.confirmNewRegistration
+      description: t.newRegistrationWarning,
+      confirmText: t.confirmButton,
+      cancelText: t.cancelButton,
+      showCancel: true,
+      onConfirm: () => {
+        // Clear saved profile ID when registering new person
+        localStorage.removeItem('userProfileId');
+        onNewRegistration();
+      }
+    });
+  };
+
 
   if (showNavigation) {
     return (
@@ -41,25 +61,16 @@ export function WaitingInterface({
         </div>
         
         <h2 className={`text-2xl font-bold text-blue-600 ${dir.textAlign}`}>
-          {currentLanguage === 'ar' 
-            ? 'في انتظار الباحثين...' 
-            : 'Waiting for searchers...'
-          }
+          {t.waitingTitle}
         </h2>
         
         <p className={`text-gray-600 ${dir.textAlign} leading-relaxed`}>
-          {currentLanguage === 'ar'
-            ? 'تم تسجيل ملفك الشخصي بنجاح. الآن يمكن للباحثين العثور عليك والتواصل معك. سيتم إشعارك عندما يبدأ أحد الباحثين جلسة تتبع معك.'
-            : 'Your profile has been registered successfully. Now searchers can find you and communicate with you. You will be notified when a searcher starts a tracking session with you.'
-          }
+          {t.waitingMessage}
         </p>
 
         <div className="bg-blue-50 p-4 rounded-lg">
           <p className={`text-sm text-blue-700 ${dir.textAlign}`}>
-            {currentLanguage === 'ar'
-              ? `معرف ملفك الشخصي: ${profileId}`
-              : `Your profile ID: ${profileId}`
-            }
+            {t.profileIdLabel} {profileId}
           </p>
         </div>
 
@@ -69,58 +80,32 @@ export function WaitingInterface({
               onClick={() => setShowNavigation(true)}
               className="w-full bg-green-600 hover:bg-green-700"
             >
-              {currentLanguage === 'ar' 
-                ? 'فتح التوجيه والملاحة' 
-                : 'Open Navigation & Guidance'
-              }
+              {t.openNavigation}
             </Button>
 
             <Button 
               variant="outline"
-              onClick={() => {
-                // Clear saved profile ID when registering new person
-                localStorage.removeItem('userProfileId');
-                onNewRegistration();
-              }}
+              onClick={handleNewRegistration}
               className="w-full"
             >
-              {currentLanguage === 'ar' 
-                ? 'تسجيل شخص آخر' 
-                : 'Register Another Person'
-              }
+              {t.newRegistrationForSite}
             </Button>
           </div>
         </div>
 
         <div className="mt-6 p-4 bg-yellow-50 rounded-lg border border-yellow-200">
           <h3 className={`font-semibold text-yellow-800 mb-2 ${dir.textAlign}`}>
-            {currentLanguage === 'ar' 
-              ? 'نصائح مهمة:' 
-              : 'Important Tips:'
-            }
+            {t.importantTips}
           </h3>
           <ul className={`text-sm text-yellow-700 space-y-1 ${dir.textAlign}`}>
-            <li>
-              {currentLanguage === 'ar'
-                ? '• حافظ على هاتفك مشحوناً ومتصلاً بالإنترنت'
-                : '• Keep your phone charged and connected to the internet'
-              }
-            </li>
-            <li>
-              {currentLanguage === 'ar'
-                ? '• ابق في مكان آمن ومرئي'
-                : '• Stay in a safe and visible location'
-              }
-            </li>
-            <li>
-              {currentLanguage === 'ar'
-                ? '• اتصل بالطوارئ إذا كنت في خطر'
-                : '• Call emergency services if you are in danger'
-              }
-            </li>
+            {t.tipsList.map((tip, index) => (
+              <li key={index}>• {tip}</li>
+            ))}
           </ul>
         </div>
       </div>
+      
+      <AlertDialog {...alertProps} />
     </Card>
   );
 }

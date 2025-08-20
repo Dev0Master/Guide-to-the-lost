@@ -34,11 +34,23 @@ interface LiveSessionData {
 export const useLiveSession = (sessionId: string | null) => {
   const [sessionData, setSessionData] = useState<LiveSessionData | null>(null);
   const [isConnected, setIsConnected] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<string>('');
   const eventSourceRef = useRef<EventSource | null>(null);
 
+  // Persist sessionId in localStorage
   useEffect(() => {
-    if (!sessionId) {
+    if (sessionId) {
+      localStorage.setItem('gfl-sessionId', sessionId);
+    }
+  }, [sessionId]);
+
+  useEffect(() => {
+    // Try to restore sessionId from localStorage if not provided
+    let sid = sessionId;
+    if (!sid) {
+      sid = localStorage.getItem('gfl-sessionId');
+    }
+    if (!sid) {
       setSessionData(null);
       setIsConnected(false);
       return;
@@ -50,78 +62,129 @@ export const useLiveSession = (sessionId: string | null) => {
     }
 
     const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3010/api';
-    const eventSource = new EventSource(`${baseUrl}/sessions/${sessionId}/live`);
+    const sseUrl = `${baseUrl}/sessions/${sid}/live`;
+    console.log('[useLiveSession] Attempting SSE connection:', {
+      sessionId: sid,
+      baseUrl,
+      sseUrl,
+      timestamp: new Date().toISOString()
+    });
+    
+    const eventSource = new EventSource(sseUrl);
     eventSourceRef.current = eventSource;
 
     eventSource.onopen = () => {
-      console.log('SSE session connection opened for session:', sessionId);
+      console.log('[useLiveSession] ✅ SSE connection successfully opened:', {
+        sessionId: sid,
+        readyState: eventSource.readyState,
+        url: eventSource.url,
+        timestamp: new Date().toISOString()
+      });
       setIsConnected(true);
-      setError(null);
+      setError('');
     };
 
     eventSource.onmessage = (event) => {
       try {
         const data = JSON.parse(event.data);
-        console.log('Received session update:', data);
-        
+        // ...existing code...
+        // Handle both flat and nested data structures
+        const messageType = data.type || data.data?.type;
+        const messageData = data.data || data;
+        // ...existing code...
         // Handle different types of session events
-        if (data.type === 'not_found') {
+        if (messageType === 'not_found') {
           setError('Session not found');
           setSessionData(null);
-        } else if (data.type === 'ended') {
-          console.log('Session ended');
-          setSessionData(prev => prev ? { ...prev, session: { ...prev.session!, status: 'ended' } } : null);
+        } else if (messageType === 'ended') {
+          setSessionData(prev => prev ? { ...prev, session: { ...prev.session!, status: 'ended' }, type: 'session_ended' } : null);
+          // Broadcast session end to allow for smooth transition
+          window.dispatchEvent(new CustomEvent('sessionEnded', { 
+            detail: { sessionId: sid, reason: 'ended' } 
+          }));
+          setTimeout(() => {
+            if (eventSourceRef.current) {
+              eventSource.close();
+              setIsConnected(false);
+            }
+          }, 1000);
+        } else if (messageType === 'resolved') {
+          setSessionData(prev => prev ? { ...prev, lostPerson: messageData, type: 'resolved' } : null);
           eventSource.close();
           setIsConnected(false);
-        } else if (data.type === 'resolved') {
-          console.log('Lost person found!');
-          setSessionData(prev => prev ? { ...prev, lostPerson: data.data, type: 'resolved' } : null);
-          eventSource.close();
-          setIsConnected(false);
-        } else if (data.type === 'session') {
-          // Session data (searcher location, status, etc.)
+        } else if (messageType === 'session') {
+          if (messageData.status === 'ended') {
+            setSessionData(prev => prev ? { ...prev, session: { ...prev.session!, status: 'ended' }, type: 'session_ended' } : null);
+            // Broadcast session end event
+            window.dispatchEvent(new CustomEvent('sessionEnded', { 
+              detail: { sessionId: messageData.sessionId, reason: 'ended' } 
+            }));
+            setTimeout(() => {
+              if (eventSourceRef.current) {
+                eventSource.close();
+                setIsConnected(false);
+              }
+            }, 1000);
+            return;
+          }
           setSessionData(prev => ({
             ...prev,
             session: {
-              sessionId: data.sessionId,
-              status: data.status,
-              campaignId: data.campaignId,
-              searcher: data.searcher,
-              updatedAt: data.updatedAt
+              sessionId: messageData.sessionId,
+              status: messageData.status,
+              campaignId: messageData.campaignId,
+              searcher: messageData.searcher,
+              updatedAt: messageData.updatedAt
             }
           }));
-        } else if (data.type === 'lost_update') {
-          // Lost person location update
+        } else if (messageType === 'lost_update') {
           setSessionData(prev => ({
             ...prev,
             lostPerson: {
-              id: data.id,
-              status: data.status,
-              geopoint: data.geopoint,
-              lastSeenRefId: data.lastSeenRefId,
-              updatedAt: data.updatedAt
+              id: messageData.id,
+              status: messageData.status,
+              geopoint: messageData.geopoint,
+              lastSeenRefId: messageData.lastSeenRefId,
+              updatedAt: messageData.updatedAt
             }
           }));
         } else {
-          // Generic data update
-          const updateData = data.data || data;
-          setSessionData(prev => ({ ...prev, ...updateData }));
+          setSessionData(prev => ({ ...prev, ...messageData }));
         }
       } catch (err) {
-        console.error('Error parsing session SSE data:', err, 'Raw event data:', event.data);
         setError('Error parsing live session data');
       }
     };
 
+    // Handle named 'ended' event specifically
+    eventSource.addEventListener('ended', (event) => {
+      try {
+        const data = JSON.parse(event.data);
+        setSessionData(prev => prev ? { ...prev, session: { ...prev.session!, status: 'ended' }, type: 'session_ended' } : null);
+        // Broadcast session end event
+        window.dispatchEvent(new CustomEvent('sessionEnded', { 
+          detail: { sessionId: data.sessionId || sid, reason: 'ended' } 
+        }));
+        setTimeout(() => {
+          if (eventSourceRef.current) {
+            eventSource.close();
+            setIsConnected(false);
+          }
+        }, 1000);
+      } catch (err) {}
+    });
+
+    // Handle named 'lost_not_found' event
+    eventSource.addEventListener('lost_not_found', (event) => {
+      try {
+        const data = JSON.parse(event.data);
+        setError('Lost person profile not found');
+      } catch (err) {}
+    });
+
     eventSource.onerror = (event) => {
-      console.error('SSE session connection error:', event);
-      console.error('EventSource readyState:', eventSource.readyState);
-      console.error('EventSource URL:', eventSource.url);
       setIsConnected(false);
-      
       let errorMessage = 'Connection error. Retrying...';
-      
-      // More specific error handling based on readyState
       switch (eventSource.readyState) {
         case EventSource.CONNECTING:
           errorMessage = 'Connecting to session stream...';
@@ -132,20 +195,15 @@ export const useLiveSession = (sessionId: string | null) => {
         default:
           errorMessage = 'Session stream connection error. Retrying...';
       }
-      
       setError(errorMessage);
-      
-      // Auto-retry connection after a delay
       setTimeout(() => {
         if (eventSourceRef.current?.readyState === EventSource.CLOSED) {
-          console.log('Attempting to reconnect SSE session...');
-          setError(null);
+          setError('');
         }
       }, 5000);
     };
 
     return () => {
-      console.log('Closing SSE session connection for session:', sessionId);
       eventSource.close();
       setIsConnected(false);
     };
@@ -158,6 +216,8 @@ export const useLiveSession = (sessionId: string | null) => {
       setIsConnected(false);
       setSessionData(null);
     }
+    // Optionally clear sessionId from localStorage
+    // localStorage.removeItem('gfl-sessionId');
   };
 
   return { 

@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "@/styles/globals.css";
-import { LanguageSwitcher } from "@/components/common/LanguageSwitcher";
+import { SwitcherContainer } from "@/components/common/SwitcherContainer";
+import { ThemeProvider } from "@/components/providers/ThemeProvider";
 import { appMetadata } from "@/lib/metadata";
 
 const geistSans = Geist({
@@ -22,12 +23,16 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="ar" dir="rtl">
+    <html>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <LanguageSwitcher />
-        {children}
+        <ThemeProvider>
+          <SwitcherContainer />
+          <main className="min-h-screen">
+            {children}
+          </main>
+        </ThemeProvider>
       </body>
     </html>
   );

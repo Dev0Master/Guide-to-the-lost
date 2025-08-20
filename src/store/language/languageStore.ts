@@ -16,6 +16,7 @@ export const useLanguageStore = create<LanguageState>((set, get) => ({
   isInitialized: false,
   
   setLanguage: (language: Language) => {
+    // English: LTR, Arabic & Persian: RTL
     const direction = language === 'en' ? 'ltr' : 'rtl';
     
     // Save to localStorage
@@ -37,6 +38,7 @@ export const useLanguageStore = create<LanguageState>((set, get) => ({
     if (typeof window !== 'undefined') {
       const savedLanguage = localStorage.getItem('selectedLanguage') as Language;
       if (savedLanguage && ['ar', 'en', 'fa'].includes(savedLanguage)) {
+        // English: LTR, Arabic & Persian: RTL
         const direction = savedLanguage === 'en' ? 'ltr' : 'rtl';
         document.documentElement.dir = direction;
         document.documentElement.lang = savedLanguage;

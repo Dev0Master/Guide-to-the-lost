@@ -24,12 +24,13 @@ interface LoginResponse {
   data: {
     user: {
       id: number;
-      name: string;
+      displayName: string;
       email: string;
-      role: 'lost_person' | 'searcher' | 'main_center_staff';
-      phone?: string;
-      created_at: string;
-      updated_at: string;
+      role: 'lost_person' | 'searcher' | 'main_center_staff' | 'staff';
+      disabled: boolean;
+      passwordHash?: string;
+      createdAt: string;
+      updatedAt: string;
     };
     accessToken: string;
   };
@@ -65,9 +66,18 @@ export default function LoginPage() {
     await post({
       data: formData,
       onSuccess: (response) => {
-        const { accessToken, user } = response;
+        const loginResponse = response as LoginResponse;
+        const { accessToken, user: apiUser } = loginResponse.data || loginResponse;
+        // Map API user structure to Auth store User structure
+        const user = {
+          id: apiUser.id?.toString() || '',
+          displayName: apiUser.displayName,
+          email: apiUser.email,
+          role: apiUser.role,
+          disabled: apiUser.disabled || false
+        };
         setAuth(user, accessToken);
-        router.push('/');
+        router.push('/dashboard');
       },
       onError: (error) => {
         console.error("Login error:", error);
@@ -76,7 +86,11 @@ export default function LoginPage() {
         } else if (error.code === 'ECONNREFUSED' || error.code === 'ERR_NETWORK') {
           setError(t.connectionError);
         } else {
-          setError(error.response?.data?.message || t.connectionError);
+          const message =
+            error.response?.data && typeof error.response.data === "object" && "message" in error.response.data
+              ? (error.response.data as { message?: string }).message
+              : undefined;
+          setError(message || t.connectionError);
         }
       }
     });

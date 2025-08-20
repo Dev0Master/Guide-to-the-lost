@@ -1,6 +1,8 @@
 import React, { useRef, useEffect, useState } from "react";
 import mapboxgl from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
+import { useLanguageStore } from "@/store/language/languageStore";
+import { navigationTranslations, getFeatureTranslations } from '@/localization';
 
 interface MiniMapBoxProps {
   value?: { lat: number; lng: number };
@@ -29,8 +31,6 @@ export default function MiniMapBox({
   value, 
   onChange, 
   initialCoordinates, 
-  onLocationSelect, 
-  isSelectable = true, 
   showPin = false, 
   personName 
 }: MiniMapBoxProps) {
@@ -206,10 +206,10 @@ export default function MiniMapBox({
             const p = markerRef.current!.getLngLat();
             const c = clampLngLatToBounds(p.lng, p.lat);
             markerRef.current!.setLngLat([c.lng, c.lat]);
-            onChange({ lat: c.lat, lng: c.lng });
+            onChange?.({ lat: c.lat, lng: c.lng });
           });
       }
-      onChange({ lat: A, lng: L });
+      onChange?.({ lat: A, lng: L });
     };
 
     if (value) placeOrMoveMarker(value.lng, value.lat);
@@ -234,7 +234,11 @@ export default function MiniMapBox({
         ref={miniMapRef}
         className="w-full h-32 rounded border cursor-pointer"
         onClick={() => setExpanded(true)}
-        title="اضغط لتحديد الموقع بدقة"
+        title={(() => {
+          const { currentLanguage } = useLanguageStore();
+          const t = getFeatureTranslations(navigationTranslations, currentLanguage);
+          return t.map.clickToSelectLocation;
+        })()}
       />
       {expanded && (
         <div
@@ -251,7 +255,11 @@ export default function MiniMapBox({
               className="absolute top-2 left-2 bg-gray-100 rounded px-2 py-1 text-sm"
               onClick={() => setExpanded(false)}
             >
-              إغلاق
+{(() => {
+                const { currentLanguage } = useLanguageStore();
+                const t = getFeatureTranslations(navigationTranslations, currentLanguage);
+                return t.common.close;
+              })()}
             </button>
           </div>
         </div>

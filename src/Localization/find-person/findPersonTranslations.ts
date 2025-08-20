@@ -39,10 +39,30 @@ export interface FindPersonTranslations {
   showOnMap: string;
 
   // Result details
-  age: string;
   clothing: string;
   lastSeen: string;
   distinctiveMark: string;
+
+  // Search validation and errors
+  searchValidation: {
+    enterSearchCriteria: string;
+    offlineSearch: string;
+    offlineSearchResults: string;
+    noMatchingResults: string;
+    connectionIssues: string;
+    unexpectedError: string;
+  };
+
+  // Session management
+  session: {
+  missingPersonId: string;
+  missingHelperId: string;
+  sessionStarted: string;
+  connectedToLostPerson: string;
+  sessionCreateError: string;
+  sessionStartError: string;
+  alreadyActiveSession: string;
+  };
 }
 
 export const findPersonTranslations: Record<'ar' | 'en' | 'fa', FindPersonTranslations> = {
@@ -87,10 +107,30 @@ export const findPersonTranslations: Record<'ar' | 'en' | 'fa', FindPersonTransl
     showOnMap: 'عرض على الخريطة',
 
     // Result details
-    age: 'العمر',
     clothing: 'لون الملابس',
     lastSeen: 'آخر مكان',
-    distinctiveMark: 'علامة مميزة'
+    distinctiveMark: 'علامة مميزة',
+
+    // Search validation and errors
+    searchValidation: {
+      enterSearchCriteria: 'يرجى إدخال الاسم أو وصف أو رقم للتواصل للبحث',
+      offlineSearch: 'تم استخدام البحث المحلي. قد لا تكون النتائج محدثة.',
+      offlineSearchResults: 'تم استخدام البحث المحلي بسبب مشكلة في الاتصال.',
+      noMatchingResults: 'لا توجد نتائج مطابقة لمعايير البحث.',
+      connectionIssues: 'فشل في الاتصال بالخادم. يرجى التحقق من الاتصال بالإنترنت.',
+      unexpectedError: 'حدث خطأ غير متوقع أثناء البحث.',
+    },
+
+    // Session management
+    session: {
+  missingPersonId: 'معرف الشخص المفقود غير متوفر.',
+  missingHelperId: 'معرف المساعد غير متوفر.',
+  sessionStarted: 'نجح بدء الجلسة!',
+  connectedToLostPerson: 'تم الاتصال بالشخص المفقود',
+  sessionCreateError: 'فشل في إنشاء معرف الجلسة',
+  sessionStartError: 'فشل في بدء الجلسة. يرجى المحاولة.',
+  alreadyActiveSession: 'هناك جلسة نشطة بالفعل لهذا المفقود. تم ربطك بالجلسة الحالية.'
+    },
   },
 
   en: {
@@ -134,10 +174,30 @@ export const findPersonTranslations: Record<'ar' | 'en' | 'fa', FindPersonTransl
     showOnMap: 'Show on Map',
 
     // Result details
-    age: 'Age',
     clothing: 'Clothing Color',
     lastSeen: 'Last Seen',
-    distinctiveMark: 'Distinctive Mark'
+    distinctiveMark: 'Distinctive Mark',
+
+    // Search validation and errors
+    searchValidation: {
+      enterSearchCriteria: 'Please enter a name, description, or contact to search.',
+      offlineSearch: 'Using offline search. Results may not be up to date.',
+      offlineSearchResults: 'Using offline search due to connection issues.',
+      noMatchingResults: 'No results match your search criteria.',
+      connectionIssues: 'Failed to connect to server. Please check your internet connection.',
+      unexpectedError: 'An unexpected error occurred during search.',
+    },
+
+    // Session management
+    session: {
+  missingPersonId: 'Lost person ID is missing.',
+  missingHelperId: 'Helper ID is missing.',
+  sessionStarted: 'Session started successfully!',
+  connectedToLostPerson: 'Connected to lost person',
+  sessionCreateError: 'Failed to create session ID',
+  sessionStartError: 'Failed to start session. Please try again.',
+  alreadyActiveSession: 'A session for this lost person is already active. You have been connected to the existing session.'
+    },
   },
 
   fa: {
@@ -181,9 +241,29 @@ export const findPersonTranslations: Record<'ar' | 'en' | 'fa', FindPersonTransl
     showOnMap: 'نمایش در نقشه',
 
     // Result details
-    age: 'سن',
     clothing: 'رنگ لباس',
     lastSeen: 'آخرین بار دیده شده',
-    distinctiveMark: 'علامت متمایز'
+    distinctiveMark: 'علامت متمایز',
+
+    // Search validation and errors
+    searchValidation: {
+      enterSearchCriteria: 'لطفاً نام، توضیحات یا شماره تماس را برای جستجو وارد کنید.',
+      offlineSearch: 'استفاده از جستجوی آفلاین. نتایج ممکن است به‌روز نباشند.',
+      offlineSearchResults: 'استفاده از جستجوی آفلاین به دلیل مشکلات اتصال.',
+      noMatchingResults: 'هیچ نتیجه‌ای با معیارهای جستجوی شما مطابقت ندارد.',
+      connectionIssues: 'اتصال به سرور ناموفق. لطفاً اتصال اینترنت خود را بررسی کنید.',
+      unexpectedError: 'خطای غیرمنتظره‌ای در طول جستجو رخ داد.',
+    },
+
+    // Session management
+    session: {
+  missingPersonId: 'شناسه فرد گمشده موجود نیست.',
+  missingHelperId: 'شناسه کمک‌کننده موجود نیست.',
+  sessionStarted: 'جلسه با موفقیت شروع شد!',
+  connectedToLostPerson: 'به فرد گمشده متصل شد',
+  sessionCreateError: 'ایجاد شناسه جلسه ناموفق',
+  sessionStartError: 'شروع جلسه ناموفق. لطفاً دوباره امتحان کنید.',
+  alreadyActiveSession: 'یک جلسه برای این فرد گمشده در حال حاضر فعال است. شما به جلسه موجود متصل شده‌اید.'
+    },
   }
 };

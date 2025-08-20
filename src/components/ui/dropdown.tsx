@@ -78,8 +78,8 @@ export function Dropdown({
           ref={menuRef}
           className={cn(
             "absolute top-full mt-2 z-50",
-            "bg-white/95 backdrop-blur-sm rounded-xl shadow-xl border border-gray-200/60",
-            "w-full py-2 px-2 overflow-hidden",
+            "bg-popover/95 backdrop-blur-sm rounded-xl shadow-xl border border-border",
+            "py-3 px-4 overflow-hidden theme-transition",
             alignmentClasses[align]
           )}
           role="menu"
@@ -109,10 +109,11 @@ export function DropdownItem({
   return (
     <button
       className={cn(
-        "w-full px-2 py-2 text-sm text-left",
-        "hover:bg-gray-50 focus:bg-gray-50",
-        "focus:outline-none transition-colors",
+        "w-full px-3 py-2 text-sm text-left text-popover-foreground rounded-md",
+        "hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground",
+        "focus:outline-none transition-colors theme-transition",
         "disabled:opacity-50 disabled:cursor-not-allowed",
+        "whitespace-nowrap",
         className
       )}
       onClick={onClick}

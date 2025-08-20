@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { useAuthStore } from "@/store/auth/authStore";
 import { useHydrated } from "@/hooks/useHydrated";
 import { useLanguageStore } from "@/store/language/languageStore";
@@ -32,17 +33,17 @@ export default function HomePage() {
   // Show loading state during hydration and language initialization to prevent mismatch
   if (!isHydrated || !isInitialized) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-4">
+      <div className="min-h-screen bg-background p-4 md:p-6">
         <div className="max-w-4xl mx-auto">
           <HomeHeader 
             isAuthenticated={false}
             onLogout={handleLogout}
           />
 
-          <main className="space-y-6">
-            <Card className="p-8">
-              <div className="text-center space-y-6">
-                <p className="text-lg text-gray-700 mb-6">
+          <main className="space-y-8">
+            <Card className="text-center">
+              <div className="space-y-8">
+                <p className="text-xl md:text-2xl text-muted-foreground leading-relaxed">
                   {t.welcomeMessage}
                 </p>
                 <ActionButtons />
@@ -57,17 +58,17 @@ export default function HomePage() {
   // Show public interface if not authenticated
   if (!isAuthenticated || !user) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-4">
+      <div className="min-h-screen bg-background p-4 md:p-6">
         <div className="max-w-4xl mx-auto">
           <HomeHeader 
             isAuthenticated={false}
             onLogout={handleLogout}
           />
 
-          <main className="space-y-6">
-            <Card className="p-8">
-              <div className="text-center space-y-6">
-                <p className="text-lg text-gray-700 mb-6">
+          <main className="space-y-8">
+            <Card className="text-center">
+              <div className="space-y-8">
+                <p className="text-xl md:text-2xl text-muted-foreground leading-relaxed">
                   {t.welcomeMessage}
                 </p>
                 <ActionButtons />
@@ -82,27 +83,25 @@ export default function HomePage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-4">
-      <div className="max-w-4xl mx-auto">
-        <HomeHeader 
-          isAuthenticated={true}
-          user={user}
-          onLogout={handleLogout}
-        />
-
-        <main className="space-y-6">
-          <Card className="p-8">
-            <div className="text-center space-y-6">
-              <p className="text-lg text-gray-700 mb-6">
-                {t.welcomeMessage}
-              </p>
-              <ActionButtons />
-              <UserInfo user={user} />
-            </div>
-          </Card>
-
-          <ServiceCards userRole={user.role} />
-        </main>
+    <div className="min-h-screen bg-background p-4 md:p-6 flex items-center justify-center">
+      <div className="text-center">
+        <Card className="p-8">
+          <div className="space-y-4">
+            <h2 className="text-2xl font-bold text-foreground">
+              {t.appTitle}
+            </h2>
+            <p className="text-muted-foreground">
+              Welcome back! Please go to your dashboard to continue.
+            </p>
+            <Button 
+              onClick={() => router.push('/dashboard')}
+              size="lg"
+              className="min-w-[200px]"
+            >
+              Go to Dashboard
+            </Button>
+          </div>
+        </Card>
       </div>
     </div>
   );

@@ -1,11 +1,14 @@
-import React, { useRef, useEffect, useState } from "react";
+import React, { useRef, useEffect, useState, useCallback } from "react";
 import mapboxgl from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
 import { useLanguageStore } from "@/store/language/languageStore";
+import { navigationTranslations, errorTranslations, getFeatureTranslations } from '@/localization';
 
 interface LostPersonMapProps {
   onLocationDetected: (coords: { lat: number; lng: number }) => void;
   onLocationError?: (error: string) => void;
+  showControls?: boolean;
+  centerOnUser?: boolean;
 }
 
 mapboxgl.accessToken = process.env.NEXT_PUBLIC_MAPBOX_TOKEN!;
@@ -67,18 +70,19 @@ export default function LostPersonMap({ onLocationDetected, onLocationError }: L
   };
 
   // تحديد موقع المستخدم تلقائياً
-  const detectUserLocation = () => {
+  const detectUserLocation = useCallback(() => {
     if (!navigator.geolocation) {
       const error = currentLanguage === 'ar' 
-        ? "متصفحك لا يدعم تحديد الموقع" 
-        : "Your browser doesn't support geolocation";
+        ? getFeatureTranslations(navigationTranslations, currentLanguage).geolocation.notSupported
+        : getFeatureTranslations(navigationTranslations, 'en').geolocation.notSupported;
       setLocationStatus(error);
       onLocationError?.(error);
       return;
     }
 
     setIsLocating(true);
-    setLocationStatus(currentLanguage === 'ar' ? "جاري تحديد موقعك..." : "Detecting your location...");
+    const t = getFeatureTranslations(navigationTranslations, currentLanguage);
+    setLocationStatus(t.geolocation.detecting);
 
     navigator.geolocation.getCurrentPosition(
       (position) => {
@@ -109,7 +113,7 @@ export default function LostPersonMap({ onLocationDetected, onLocationError }: L
         markerRef.current = marker;
         
         setIsLocating(false);
-        setLocationStatus(currentLanguage === 'ar' ? "تم تحديد موقعك بنجاح" : "Location detected successfully");
+        setLocationStatus(getFeatureTranslations(navigationTranslations, currentLanguage).geolocation.success);
         
         // إرسال الموقع للمكون الأب
         onLocationDetected(clampedLocation);
@@ -121,23 +125,23 @@ export default function LostPersonMap({ onLocationDetected, onLocationError }: L
         switch (error.code) {
           case error.PERMISSION_DENIED:
             errorMessage = currentLanguage === 'ar' 
-              ? "تم رفض الإذن لتحديد الموقع. يرجى السماح بالوصول للموقع."
-              : "Location permission denied. Please allow location access.";
+              ? getFeatureTranslations(navigationTranslations, currentLanguage).geolocation.permissionDenied
+              : getFeatureTranslations(navigationTranslations, 'en').geolocation.permissionDenied;
             break;
           case error.POSITION_UNAVAILABLE:
             errorMessage = currentLanguage === 'ar'
-              ? "معلومات الموقع غير متاحة"
-              : "Location information unavailable";
+              ? getFeatureTranslations(navigationTranslations, currentLanguage).geolocation.unavailable
+              : getFeatureTranslations(navigationTranslations, 'en').geolocation.unavailable;
             break;
           case error.TIMEOUT:
             errorMessage = currentLanguage === 'ar'
-              ? "انتهت مهلة طلب تحديد الموقع"
-              : "Location request timeout";
+              ? getFeatureTranslations(navigationTranslations, currentLanguage).geolocation.timeout
+              : getFeatureTranslations(navigationTranslations, 'en').geolocation.timeout;
             break;
           default:
             errorMessage = currentLanguage === 'ar'
-              ? "حدث خطأ أثناء تحديد الموقع"
-              : "An error occurred while detecting location";
+              ? getFeatureTranslations(errorTranslations, currentLanguage).location.detectionError
+              : getFeatureTranslations(errorTranslations, 'en').location.detectionError;
             break;
         }
         
@@ -150,7 +154,7 @@ export default function LostPersonMap({ onLocationDetected, onLocationError }: L
         maximumAge: 0
       }
     );
-  };
+  }, [currentLanguage, onLocationError, onLocationDetected]);
 
   // إعادة محاولة تحديد الموقع
   const retryLocationDetection = () => {
@@ -166,7 +170,7 @@ export default function LostPersonMap({ onLocationDetected, onLocationError }: L
       />
       
       <div className="text-center">
-        <div className={`text-sm ${isLocating ? 'text-blue-600' : locationStatus.includes('نجاح') || locationStatus.includes('success') ? 'text-green-600' : 'text-red-600'}`}>
+        <div className={`text-sm ${isLocating ? 'text-blue-600' : locationStatus.includes(getFeatureTranslations(navigationTranslations, currentLanguage).geolocation.success) ? 'text-green-600' : 'text-red-600'}`}>
           {isLocating && (
             <div className="flex items-center justify-center gap-2">
               <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
@@ -176,12 +180,12 @@ export default function LostPersonMap({ onLocationDetected, onLocationError }: L
           {!isLocating && locationStatus && (
             <div className="space-y-2">
               <p>{locationStatus}</p>
-              {!locationStatus.includes('نجاح') && !locationStatus.includes('success') && (
+              {!locationStatus.includes(getFeatureTranslations(navigationTranslations, currentLanguage).geolocation.success) && (
                 <button
                   onClick={retryLocationDetection}
                   className="text-blue-600 hover:text-blue-800 underline text-sm"
                 >
-                  {currentLanguage === 'ar' ? 'إعادة المحاولة' : 'Retry'}
+                  {getFeatureTranslations(navigationTranslations, currentLanguage).common.retry}
                 </button>
               )}
             </div>

@@ -15,7 +15,7 @@ interface LiveProfileData {
 export const useLiveProfile = (profileId: string | null) => {
   const [profileData, setProfileData] = useState<LiveProfileData | null>(null);
   const [isConnected, setIsConnected] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<string>('');
   const eventSourceRef = useRef<EventSource | null>(null);
 
   useEffect(() => {
@@ -37,7 +37,7 @@ export const useLiveProfile = (profileId: string | null) => {
     eventSource.onopen = () => {
       console.log('SSE connection opened for profile:', profileId);
       setIsConnected(true);
-      setError(null);
+      setError('');
     };
 
     eventSource.onmessage = (event) => {
@@ -98,7 +98,7 @@ export const useLiveProfile = (profileId: string | null) => {
       setTimeout(() => {
         if (eventSourceRef.current?.readyState === EventSource.CLOSED) {
           console.log('Attempting to reconnect SSE profile...');
-          setError(null);
+          setError('');
         }
       }, 5000);
     };

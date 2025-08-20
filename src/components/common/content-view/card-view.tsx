@@ -2,7 +2,7 @@
 "use client";
 import React from "react";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
-import { ColumnDef, PaginatedData } from "./inadex";
+import { ColumnDef, PaginatedData } from "./index";
  
 
 export interface CardViewProps<T extends { id: React.Key }> {

@@ -8,20 +8,20 @@ export interface ApiPagination {
     total_pages: number;
 }
 
-export interface ApiResponse<T = any> {
+export interface ApiResponse<T = unknown> {
     status: 'success' | 'error';
     message: string;
-    errors: any;
+    errors: Record<string, unknown> | null;
     data: {
         items: T[];
         pagination: ApiPagination;
     };
 }
 
-export interface SingleApiResponse<T = any> {
+export interface SingleApiResponse<T = unknown> {
     status: 'success' | 'error';
     message: string;
-    errors: any;
+    errors: Record<string, unknown> | null;
     data: T;
 }
 
@@ -40,14 +40,14 @@ export interface ErrorState {
 export interface ApiParams {
     page?: number | null;
     search?: string;
-    [key: string]: any;
+    [key: string]: unknown;
 }
 
-export interface UseApiDataOptions<T = any> {
+export interface UseApiDataOptions<T = unknown> {
     enableFetch?: boolean;
     pagination?: boolean;
     limitItems?: number | null;
-    initialParams?: Record<string, any>;
+    initialParams?: Record<string, unknown>;
     resourceId?: string | number | null;
     refetchOnWindowFocus?: boolean;
     refetchOnReconnect?: boolean;
@@ -64,13 +64,13 @@ export interface BaseRequestOptions {
     retry?: boolean;
 }
 
-export interface MutationOptions<T = any> extends BaseRequestOptions {
+export interface MutationOptions<T = unknown> extends BaseRequestOptions {
     data?: T;
-    onSuccess?: (result: any, sentData?: T) => void;
+    onSuccess?: (result: unknown, sentData?: T) => void;
     onError?: (error: AxiosError, sentData?: T) => void;
 }
 
-export interface UseApiDataReturn<T = any> {
+export interface UseApiDataReturn<T = unknown> {
     data: ApiResponse<T> | SingleApiResponse<T> | null;
     params: ApiParams;
     loading: LoadingState;
@@ -79,15 +79,15 @@ export interface UseApiDataReturn<T = any> {
     isFetching: boolean;
     fetchError: string | null;
     hasFetchError: boolean;
-    get: (customEndpoint?: string | null) => Promise<any>;
-    post: <K = any>(options?: MutationOptions<K>) => Promise<any>;
-    put: <K = any>(options?: MutationOptions<K>) => Promise<any>;
-    delete: <K = any>(options?: MutationOptions<K>) => Promise<any>;
+    get: (customEndpoint?: string | null) => Promise<unknown>;
+    post: <K = unknown>(options?: MutationOptions<K>) => Promise<unknown>;
+    put: <K = unknown>(options?: MutationOptions<K>) => Promise<unknown>;
+    delete: <K = unknown>(options?: MutationOptions<K>) => Promise<unknown>;
     retry: () => void;
     cancel: () => void;
     loadMore: () => Promise<void>;
-    updateParams: (newParams: Record<string, any>, refetch?: boolean) => void;
+    updateParams: (newParams: Record<string, unknown>, refetch?: boolean) => void;
     clearFetchError: () => void;
     reset: () => void;
-    refetch: (customEndpoint?: string | null) => Promise<any>;
+    refetch: (customEndpoint?: string | null) => Promise<unknown>;
 }

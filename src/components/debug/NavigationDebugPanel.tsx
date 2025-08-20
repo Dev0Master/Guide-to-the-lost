@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useLanguageStore } from "@/store/language/languageStore";
 import { getDirectionalClasses } from "@/lib/rtl-utils";
+import { debugTranslations, getFeatureTranslations } from '@/localization';
 import { 
   Bug, 
   Wifi, 
@@ -21,15 +22,15 @@ import {
 interface NavigationDebugPanelProps {
   sessionId?: string;
   profileId?: string;
-  sessionData?: any;
-  profileData?: any;
+  sessionData?: Record<string, unknown>;
+  profileData?: Record<string, unknown>;
   sessionConnected?: boolean;
   profileConnected?: boolean;
   sessionError?: string | null;
   profileError?: string | null;
   currentLocation?: { lat: number; lng: number } | null;
   locationError?: string;
-  navigationRoute?: any;
+  navigationRoute?: Record<string, unknown>;
   onRefreshConnections?: () => void;
 }
 
@@ -48,6 +49,7 @@ export function NavigationDebugPanel({
   onRefreshConnections
 }: NavigationDebugPanelProps) {
   const { currentLanguage } = useLanguageStore();
+  const t = getFeatureTranslations(debugTranslations, currentLanguage);
   const dir = getDirectionalClasses(currentLanguage);
   const [isExpanded, setIsExpanded] = useState(false);
   const [debugLogs, setDebugLogs] = useState<string[]>([]);
@@ -55,21 +57,21 @@ export function NavigationDebugPanel({
   useEffect(() => {
     const timestamp = new Date().toLocaleTimeString();
     if (sessionConnected !== undefined) {
-      setDebugLogs(prev => [...prev, `${timestamp} - Session connection: ${sessionConnected ? 'Connected' : 'Disconnected'}`].slice(-10));
+      setDebugLogs(prev => [...prev, `${timestamp} - ${t.connection.sessionSSE}: ${sessionConnected ? t.connection.connected : t.connection.disconnected}`].slice(-10));
     }
   }, [sessionConnected]);
 
   useEffect(() => {
     const timestamp = new Date().toLocaleTimeString();
     if (profileConnected !== undefined) {
-      setDebugLogs(prev => [...prev, `${timestamp} - Profile connection: ${profileConnected ? 'Connected' : 'Disconnected'}`].slice(-10));
+      setDebugLogs(prev => [...prev, `${timestamp} - ${t.connection.profileSSE}: ${profileConnected ? t.connection.connected : t.connection.disconnected}`].slice(-10));
     }
   }, [profileConnected]);
 
   useEffect(() => {
     const timestamp = new Date().toLocaleTimeString();
     if (currentLocation) {
-      setDebugLogs(prev => [...prev, `${timestamp} - Location updated: ${currentLocation.lat.toFixed(5)}, ${currentLocation.lng.toFixed(5)}`].slice(-10));
+      setDebugLogs(prev => [...prev, `${timestamp} - ${t.logs.locationUpdated} ${currentLocation.lat.toFixed(5)}, ${currentLocation.lng.toFixed(5)}`].slice(-10));
     }
   }, [currentLocation]);
 
@@ -94,7 +96,7 @@ export function NavigationDebugPanel({
         <div className="flex items-center gap-2">
           <Bug className="w-5 h-5 text-purple-600" />
           <h3 className={`font-semibold text-purple-900 ${dir.textAlign}`}>
-            {currentLanguage === 'ar' ? 'لوحة التشخيص' : 'Debug Panel'}
+            {t.title}
           </h3>
           {getConnectionIcon()}
         </div>
@@ -112,10 +114,7 @@ export function NavigationDebugPanel({
             variant="outline"
             onClick={() => setIsExpanded(!isExpanded)}
           >
-            {isExpanded 
-              ? (currentLanguage === 'ar' ? 'إخفاء' : 'Hide')
-              : (currentLanguage === 'ar' ? 'إظهار' : 'Show')
-            }
+            {isExpanded ? t.hide : t.show}
           </Button>
         </div>
       </div>
@@ -125,62 +124,64 @@ export function NavigationDebugPanel({
         <div className="text-center">
           <div className="flex items-center justify-center gap-1 mb-1">
             {sessionConnected ? <Wifi className="w-4 h-4 text-green-600" /> : <WifiOff className="w-4 h-4 text-red-600" />}
-            <span className="text-xs font-medium">Session SSE</span>
+            <span className="text-xs font-medium">{t.connection.sessionSSE}</span>
           </div>
           <Badge variant={sessionConnected ? 'default' : 'destructive'} className="text-xs">
-            {sessionConnected ? 'Connected' : 'Disconnected'}
+            {sessionConnected ? t.connection.connected : t.connection.disconnected}
           </Badge>
         </div>
 
         <div className="text-center">
           <div className="flex items-center justify-center gap-1 mb-1">
             {profileConnected ? <Wifi className="w-4 h-4 text-green-600" /> : <WifiOff className="w-4 h-4 text-red-600" />}
-            <span className="text-xs font-medium">Profile SSE</span>
+            <span className="text-xs font-medium">{t.connection.profileSSE}</span>
           </div>
           <Badge variant={profileConnected ? 'default' : 'destructive'} className="text-xs">
-            {profileConnected ? 'Connected' : 'Disconnected'}
+            {profileConnected ? t.connection.connected : t.connection.disconnected}
           </Badge>
         </div>
 
         <div className="text-center">
           <div className="flex items-center justify-center gap-1 mb-1">
             <MapPin className="w-4 h-4 text-blue-600" />
-            <span className="text-xs font-medium">Location</span>
+            <span className="text-xs font-medium">{t.status.location}</span>
           </div>
           <Badge variant={currentLocation ? 'default' : 'secondary'} className="text-xs">
-            {currentLocation ? 'Available' : 'Unavailable'}
+            {currentLocation ? t.connection.available : t.connection.unavailable}
           </Badge>
         </div>
 
         <div className="text-center">
           <div className="flex items-center justify-center gap-1 mb-1">
             <Navigation className="w-4 h-4 text-purple-600" />
-            <span className="text-xs font-medium">Route</span>
+            <span className="text-xs font-medium">{t.status.route}</span>
           </div>
           <Badge variant={navigationRoute ? 'default' : 'secondary'} className="text-xs">
-            {navigationRoute ? 'Calculated' : 'Pending'}
+            {navigationRoute ? t.connection.calculated : t.connection.pending}
           </Badge>
         </div>
       </div>
 
       {/* Errors */}
-      {(sessionError || profileError || locationError) && (
+      {((sessionError && sessionError !== 'undefined' && sessionError.trim() !== '') || 
+        (profileError && profileError !== 'undefined' && profileError.trim() !== '') || 
+        (locationError && locationError.trim() !== '')) && (
         <div className="mb-3">
-          <h4 className="text-sm font-medium text-red-900 mb-2">Active Errors:</h4>
+          <h4 className="text-sm font-medium text-red-900 mb-2">{t.sections.activeErrors}</h4>
           <div className="space-y-1">
-            {sessionError && (
+            {sessionError && sessionError !== 'undefined' && sessionError.trim() !== '' && (
               <div className="text-xs p-2 bg-red-100 text-red-800 rounded">
-                Session: {sessionError}
+                {t.errors.session}: {sessionError}
               </div>
             )}
-            {profileError && (
+            {profileError && profileError !== 'undefined' && profileError.trim() !== '' && (
               <div className="text-xs p-2 bg-red-100 text-red-800 rounded">
-                Profile: {profileError}
+                {t.errors.profile}: {profileError}
               </div>
             )}
-            {locationError && (
+            {locationError && locationError.trim() !== '' && (
               <div className="text-xs p-2 bg-red-100 text-red-800 rounded">
-                Location: {locationError}
+                {t.errors.location}: {locationError}
               </div>
             )}
           </div>
@@ -191,14 +192,14 @@ export function NavigationDebugPanel({
         <div className="space-y-3">
           {/* IDs */}
           <div>
-            <h4 className="text-sm font-medium mb-2">IDs:</h4>
+            <h4 className="text-sm font-medium mb-2">{t.sections.ids}</h4>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-xs">
               <div>
-                <span className="font-medium">Session ID:</span>
+                <span className="font-medium">{t.sections.sessionId}</span>
                 <div className="font-mono bg-gray-200 p-1 rounded mt-1">{sessionId || 'N/A'}</div>
               </div>
               <div>
-                <span className="font-medium">Profile ID:</span>
+                <span className="font-medium">{t.sections.profileId}</span>
                 <div className="font-mono bg-gray-200 p-1 rounded mt-1">{profileId || 'N/A'}</div>
               </div>
             </div>
@@ -207,7 +208,7 @@ export function NavigationDebugPanel({
           {/* Current Location */}
           {currentLocation && (
             <div>
-              <h4 className="text-sm font-medium mb-2">Current Location:</h4>
+              <h4 className="text-sm font-medium mb-2">{t.sections.currentLocation}</h4>
               <div className="text-xs font-mono bg-green-100 p-2 rounded">
                 Lat: {currentLocation.lat.toFixed(6)}<br />
                 Lng: {currentLocation.lng.toFixed(6)}
@@ -218,7 +219,7 @@ export function NavigationDebugPanel({
           {/* Session Data */}
           {sessionData && (
             <div>
-              <h4 className="text-sm font-medium mb-2">Session Data:</h4>
+              <h4 className="text-sm font-medium mb-2">{t.sections.sessionData}</h4>
               <div className="text-xs font-mono bg-blue-100 p-2 rounded max-h-32 overflow-y-auto">
                 <pre>{JSON.stringify(sessionData, null, 2)}</pre>
               </div>
@@ -228,7 +229,7 @@ export function NavigationDebugPanel({
           {/* Profile Data */}
           {profileData && (
             <div>
-              <h4 className="text-sm font-medium mb-2">Profile Data:</h4>
+              <h4 className="text-sm font-medium mb-2">{t.sections.profileData}</h4>
               <div className="text-xs font-mono bg-yellow-100 p-2 rounded max-h-32 overflow-y-auto">
                 <pre>{JSON.stringify(profileData, null, 2)}</pre>
               </div>
@@ -238,7 +239,7 @@ export function NavigationDebugPanel({
           {/* Navigation Route */}
           {navigationRoute && (
             <div>
-              <h4 className="text-sm font-medium mb-2">Navigation Route:</h4>
+              <h4 className="text-sm font-medium mb-2">{t.sections.navigationRoute}</h4>
               <div className="text-xs font-mono bg-purple-100 p-2 rounded max-h-32 overflow-y-auto">
                 <pre>{JSON.stringify(navigationRoute, null, 2)}</pre>
               </div>
@@ -247,14 +248,14 @@ export function NavigationDebugPanel({
 
           {/* Debug Logs */}
           <div>
-            <h4 className="text-sm font-medium mb-2">Recent Events:</h4>
+            <h4 className="text-sm font-medium mb-2">{t.sections.recentEvents}</h4>
             <div className="text-xs bg-gray-200 p-2 rounded max-h-32 overflow-y-auto">
               {debugLogs.length > 0 ? (
                 debugLogs.map((log, index) => (
                   <div key={index} className="mb-1">{log}</div>
                 ))
               ) : (
-                <div className="text-gray-500">No events yet...</div>
+                <div className="text-gray-500">{t.sections.noEvents}</div>
               )}
             </div>
           </div>
